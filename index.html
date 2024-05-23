@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn-click">Clique</button>
+    <table id="result">
+        <thead>
+            <tr>
+                <th data-columref="tipo.nome">Tipo</th>
+                <th data-columref="desc">Descrição</th>
+                <th data-columref="valor">Valor</th>
+                <th data-columref="date">Data</th>
+                <th data-columref="categoria.nome">Categoria</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+    </table>
+
+    <script id="TableJson">
+        class TableJson {
+            constructor(data, cabecalhos, footer = false, filtros = 'DEFAULT') {
+                this.data = data;
+                this.cabecalhos = cabecalhos;
+                this.footer = footer;
+                this.filtros = filtros;
+            }
+
+            renderTable(HtmlTable) {
+                const HtmlHeader = HtmlTable.getElementsByTagName('thead')[0];
+                const HtmlBody = HtmlTable.getElementsByTagName('tbody')[0];
+                const HtmlFooter = HtmlTable.getElementsByTagName('tfoot')[0];
+                
+                this.composeHeader(HtmlHeader);
+                //return HtmlHeader;
+                //composeBody(HtmlBody);
+                //composeFooter(HtmlFooter);
+            }
+
+            composeHeader(HtmlHeader) {
+                let row = document.createElement('tr');
+                HtmlHeader.innerHTML = ''; 
+
+                Object.keys(this.cabecalhos).forEach(key => {
+                    let cell = document.createElement('th');
+                    cell.setAttribute('data-columref', key);
+                    cell.innerText = this.cabecalhos[key];
+                    row.appendChild(cell);
+                })
+
+                HtmlHeader.appendChild(row);
+                return HtmlHeader;
+            }
+
+            comporseBody(HtmlBody) {
+
+            }
+
+            composeFooter(HtmlFooter) {
+
+            }
+        }
+    </script>
+
+    <script id="Helpers">
+        class Helpers {
+            static soma(a, b) {
+                return a + b;
+            }
+
+            static subtracao(a, b) {
+                return a - b;
+            }
+
+            static multiplicacao(a, b) {
+                return a * b;
+            }
+        }
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const myTable = document.querySelector('#result');
+            const cabecalho = {};
+
+            myTable.querySelectorAll('thead th').forEach(item => {
+                cabecalho[item.dataset.columref] = item.innerText;
+            });
+
+            let tabela = new TableJson('Olá Mundo!', cabecalho);
+            document.querySelector('#btn-click').addEventListener('click', function () {
+                tabela.renderTable(myTable)
+            })
+        })
+    </script>
+</body>
+</html>
