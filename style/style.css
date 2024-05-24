@@ -1,0 +1,16 @@
+table {
+  background-color: #ec8b0c;
+}
+
+table {
+  font-size: 25px;
+}
+
+@media only screen and not (orientation: landscape) {
+  table {
+    background-color: #ec8b0c;
+  }
+  table {
+    font-size: 15px;
+  }
+}/*# sourceMappingURL=style.css.map */
