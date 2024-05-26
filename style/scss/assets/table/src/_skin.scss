@@ -1,0 +1,95 @@
+@use '../../../src/config' as *;
+@use '../../../src/Helpers';
+@use 'sass:color';
+
+// ----- Inicio do Escopo de Configurações ----- //
+$conf-table-color: $sec-color;
+
+$conf-inner-border: 1px solid color.change(
+    $conf-table-color,
+    $lightness: 20%,
+    $saturation: 100%
+);
+
+$conf-round: 7px;
+$conf-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
+
+@mixin colConfig() {
+    &:nth-child(1) {
+        text-align: center;
+    }
+    &:nth-child(2) {
+        text-align: initial;
+    }
+    &:nth-child(3) {
+        text-align: center;
+    }
+    &:nth-child(4) {
+        text-align: center;
+    }
+    &:nth-child(5) {
+        text-align: center;
+    }
+}
+/* ----- Fim do Escopo de Configurações ----- //
+
+// ----- Inicio do Escopo Principal ----- */
+
+@mixin table() {
+    background-color: $conf-table-color;
+    border-radius: $conf-round;
+    box-shadow: $conf-box-shadow;
+}
+
+@mixin thead() {
+
+}
+
+@mixin tbody() {
+    background-color: color.change(
+            $conf-table-color,
+            $lightness: 97%,
+            $saturation: 17%
+        );
+}
+
+@mixin tfoot() {
+    
+}
+
+@mixin tr($thead: false, $tbody: false, $tfoot: false) {
+    @if $tbody {
+        &:not(:last-child) {
+            border-bottom: $conf-inner-border;
+        }
+        &:nth-child(odd) {
+            background-color: color.change(
+                $conf-table-color,
+                $lightness: 93%,
+                $saturation: 25%
+            );
+        }
+    } @else if $thead {
+        background-color: $conf-table-color;
+
+        box-shadow: $conf-box-shadow;
+        border-radius: $conf-round $conf-round 0  0;
+    }
+}
+
+@mixin td() {
+}
+
+@mixin th() {
+    //background-color: $conf-table-color;
+    
+    font-weight: bold;
+    font-size: $font-size * 1.25;
+    
+    min-height: 30px;
+    
+    
+    @include Helpers.round($conf-round);
+}
+
+// ----- Fim do Escopo Principal ----- //

@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style/style.css">
+    <style>
+        body {
+            margin: 20px auto;
+            max-width: 1280px;
+            height: 200vh;
+        }
+    </style>
 </head>
 <body>
+<!--
     <section class="filtros">
         <select name="" id="">
             <option value="">Entrada</option>
@@ -25,7 +33,7 @@
         <input type="search" name="" id="">
         <button id="btn-click">Atualizar</button>
     </section>
-
+-->
     <!-- Tabela Dinamica -->
     <table id="result-transacoes">
         <thead>
@@ -39,116 +47,102 @@
         </thead>
         <tbody>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>OUT</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>OUT</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>OUT</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>OUT</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
             <tr>
-                <td>Entrada</td>
+                <td>IN</td>
                 <td>Descrição Genérica para estilo</td>
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
-                <td><a href="">$</a></td>
             </tr>
         </tbody>
         <tfoot>
@@ -158,6 +152,53 @@
             </tr>
         </tfoot>
     </table>
+    <button id="btn-click">Olá Mundo!</button>
+    
+    <script id="tr-expand">
+        document.addEventListener("DOMContentLoaded", function() {
+        const trs = document.querySelectorAll('tbody tr');
+
+            trs.forEach(function(tr) {
+                const originalHeight = tr.clientHeight;
+                const expandedHeight = originalHeight*1.5; // Altura final ao expandir
+                const animationDuration = 350; // Duração da animação em milissegundos
+                const increment = (expandedHeight - originalHeight) / (animationDuration / 16); // 16ms é o intervalo de tempo para cada frame (1000ms / 60fps)
+
+                let currentHeight = originalHeight;
+                let animationFrameId;
+
+                tr.addEventListener('mouseenter', function() {
+                    cancelAnimationFrame(animationFrameId);
+                    expand();
+                });
+
+                tr.addEventListener('mouseleave', function() {
+                    cancelAnimationFrame(animationFrameId);
+                    shrink();
+                });
+
+                function expand() {
+                    if (currentHeight < expandedHeight) {
+                        currentHeight += increment;
+                        tr.style.height = currentHeight + 'px';
+                        animationFrameId = requestAnimationFrame(expand);
+                    } else {
+                        tr.style.height = expandedHeight + 'px';
+                    }
+                }
+
+                function shrink() {
+                    if (currentHeight > originalHeight) {
+                        currentHeight -= increment;
+                        tr.style.height = currentHeight + 'px';
+                        animationFrameId = requestAnimationFrame(shrink);
+                    } else {
+                        tr.style.height = originalHeight + 'px';
+                    }
+                }
+            });
+        });
+    </script>
 
     <script id="TableJson">
         class TableJson {
@@ -191,6 +232,7 @@
                 })
 
                 HtmlHeader.appendChild(row);
+                console.log("Olá");
                 return HtmlHeader;
             }
 

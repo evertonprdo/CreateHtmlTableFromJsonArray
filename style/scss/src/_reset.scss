@@ -1,4 +1,5 @@
 /* Reset básico */
+@use 'config';
 *,
 *::before,
 *::after {
@@ -14,7 +15,7 @@
     font: inherit;
     vertical-align: baseline;
 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: config.$font-family;
 }
 
 /* HTML5 display-role reset para navegadores que não suportam */

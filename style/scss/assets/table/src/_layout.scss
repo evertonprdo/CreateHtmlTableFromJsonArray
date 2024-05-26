@@ -1,0 +1,65 @@
+@use '../../../src/Helpers';
+
+@mixin colConfig() {
+    width: 15%;
+    
+    &:nth-child(1) {
+        width: 5%;
+    }
+    &:nth-child(2) {
+        width: 50%;
+    }
+}
+
+// ----- Inicio do Escopo Principal ----- //
+
+
+@mixin table() {
+    @include Helpers.flexColumn(space-between);
+}
+
+@mixin thead() {
+    height: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+@mixin tbody() {
+    @include Helpers.flexColumn(space-between);
+}
+
+@mixin tfoot() {
+    
+}
+
+@mixin tr($tbody: false) {
+    @if $tbody {
+        display: flex;
+        align-items: center;
+    }
+    display: flex;
+    justify-content: space-between;
+}
+
+@mixin td() {
+    padding: 7px;
+}
+
+@mixin th($top: true) {
+    @include td();
+    padding: 10px;
+
+    @if $top {
+
+    } @else {
+        &:first-child {
+            width: 57%;
+        }
+        &:last-child {
+            width: 43%;
+        }
+    }
+}
+
+// ----- Fim do Escopo Principal ----- //

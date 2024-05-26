@@ -1,0 +1,63 @@
+@use 'sass:color';
+@use 'skin' as *;
+@use 'layout' as *;
+@use '../../../src/config' as *;
+
+$conf-time: .35s ease;
+
+$conf-transition:
+    background-color $conf-time,
+    font-size $conf-time
+    ;
+
+// ----- Inicio do Escopo Principal ----- //
+@mixin table() {
+
+}
+
+@mixin thead() {
+
+}
+
+@mixin tbody() {
+
+}
+
+@mixin tfoot() {
+
+}
+
+@mixin tr($thead: false, $tbody: false, $tfoot: false) {
+    @if $tbody {
+        transition: $conf-transition;
+        &:hover {
+            background-color: color.change(
+                $conf-table-color,
+                $lightness: 83%,
+                $saturation: 30%
+            );
+            font-weight: bold;
+            font-size: $font-size * 1.03;
+        }
+    }
+}
+
+@mixin th($thead: false) {
+    @if $thead {
+        cursor: pointer;
+        //transition: $conf-transition;
+        
+        &:hover, &:focus  {
+            background-color: color.change(
+                $conf-table-color,
+                $lightness: color.lightness($conf-table-color) + 10%,
+                $saturation: 73%
+            );
+        }
+    }
+}
+
+@mixin td() {
+
+}
+// ----- Fim do Escopo Principal ----- //

@@ -1,2 +1,9 @@
+@use 'assets/table/table';
+
 @import 'src/reset';
-@import 'assets/tabela';
+
+.filtros {
+    display: none;
+}
+
+@include table.build();

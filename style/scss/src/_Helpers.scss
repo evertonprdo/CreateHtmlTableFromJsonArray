@@ -1,0 +1,24 @@
+@mixin round($round: $conf-round, $top: true) {
+    @if $top {
+        &:first-child {
+            border-radius: $round 0 0 0;
+        }
+        &:last-child {
+            border-radius: 0 $round 0 0;
+        }
+    } @else {
+        &:first-child {
+            border-radius: 0 0 0 $round;
+        }
+        &:last-child {
+            border-radius: 0 0 $round 0;
+        }
+    }
+}
+
+@mixin flexColumn($justify: center) {
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: $justify;
+}
