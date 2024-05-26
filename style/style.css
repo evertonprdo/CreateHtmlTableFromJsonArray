@@ -1,16 +1,272 @@
-table {
-  background-color: #ec8b0c;
+@charset "UTF-8";
+/* Reset básico */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-table {
-  font-size: 25px;
+/* HTML5 display-role reset para navegadores que não suportam */
+article, aside, details, figcaption, figure, footer, header, main, menu, nav, section {
+  display: block;
 }
 
-@media only screen and not (orientation: landscape) {
-  table {
-    background-color: #ec8b0c;
-  }
-  table {
-    font-size: 15px;
-  }
+/* Remover os estilos adicionais em elementos de áudio e vídeo */
+audio, canvas, progress, video {
+  display: inline-block;
+}
+
+/* Ajudar a garantir a consistência do layout em formulários */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Remover a aparência de botão do botão do tipo "file" */
+button, select {
+  text-transform: none;
+}
+
+/* Remover o estilo interno das listas */
+ol, ul {
+  list-style: none;
+}
+
+/* Ancorar links */
+a {
+  background-color: transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Definir a aparência básica dos campos de formulário */
+textarea {
+  overflow: auto;
+  resize: none;
+}
+
+/* Remover a aparência do campo de busca no WebKit/Blink */
+input[type=search] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Corrigir a estilização do número nos campos de input no Chrome/Safari */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Remover o sublinhado em hiperlinks */
+a:active, a:hover {
+  outline-width: 0;
+}
+
+/* Reset de tabelas */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: table;
+}
+table thead {
+  display: table-header-group;
+}
+table thead tr {
+  display: table-row;
+}
+table thead tr td, table thead tr th {
+  display: table-cell;
+}
+table tbody {
+  display: table-row-group;
+}
+table tbody tr {
+  display: table-row;
+}
+table tbody tr td, table tbody tr th {
+  display: table-cell;
+}
+table tfoot {
+  display: table-footer-group;
+}
+table tfoot tr {
+  display: table-row;
+}
+table tfoot tr td, table tfoot tr th {
+  display: table-cell;
+}
+
+/* Reseta para imagens */
+img {
+  border-style: none;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Reset para SVG */
+svg:not(:root) {
+  overflow: hidden;
+}
+
+/* Adicionar borda a campos de formulário no Firefox */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Estilização de legendas em formulários */
+legend {
+  box-sizing: border-box;
+  color: inherit;
+  display: table;
+  max-width: 100%;
+  white-space: normal;
+}
+
+/* Remover formatação do código */
+code, kbd, pre, samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+/* Tornar os controles de formulários visíveis nos dispositivos móveis */
+button, input, optgroup, select, textarea {
+  font-family: sans-serif;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+/* Garantir uma consistência no estilo dos botões */
+button, input[type=button], input[type=reset], input[type=submit] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  cursor: pointer;
+}
+
+/* Remover a aparência interna dos botões e campos de formulário nos navegadores */
+button::-moz-focus-inner, input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* Remover a aparência dos botões quando estão em estado de foco */
+button:-moz-focusring, input:-moz-focusring {
+  outline: 0;
+}
+
+/* Tornar as caixas de seleção e os rádios utilizáveis */
+input[type=checkbox], input[type=radio] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Ajustar a aparência dos botões para elementos de campo de arquivo */
+input[type=file] {
+  display: block;
+}
+
+/* Corrigir a estilização de detalhes */
+details {
+  display: block;
+}
+
+/* Corrigir a estilização de marcações de resumo */
+summary {
+  display: list-item;
+}
+
+/* Remover a aparência padrão dos botões de diálogo */
+template {
+  display: none;
+}
+
+/* Estilização mínima para o corpo */
+body {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+.filtros {
+  display: none;
+}
+
+#result-transacoes {
+  width: 100%;
+  margin-top: 20px;
+}
+#result-transacoes thead {
+  background-color: #ff0000;
+}
+#result-transacoes thead tr th {
+  width: 15%;
+  max-width: 100%;
+  padding: 7px 7px;
+  border: 1px solid #999;
+}
+#result-transacoes thead tr th:nth-child(1) {
+  width: 5%;
+}
+#result-transacoes thead tr th:nth-child(2) {
+  width: 50%;
+}
+#result-transacoes tbody {
+  background-color: #fff;
+}
+#result-transacoes tbody tr:nth-child(even) {
+  background-color: #eee;
+}
+#result-transacoes tbody tr:hover, #result-transacoes tbody tr:focus {
+  background-color: #c6c6c6;
+}
+#result-transacoes tbody tr td {
+  width: 15%;
+  max-width: 100%;
+  padding: 5.11px 7px;
+  border: 1px solid #999;
+}
+#result-transacoes tbody tr td:nth-child(1) {
+  width: 5%;
+}
+#result-transacoes tbody tr td:nth-child(2) {
+  width: 50%;
+}
+#result-transacoes tfoot {
+  background-color: #ff0000;
+}
+#result-transacoes tfoot tr td {
+  max-width: 100%;
+  padding: 7px 7px;
+  border: 1px solid #999;
+}
+#result-transacoes tfoot tr td:nth-child(1) {
+  width: 55%;
+}
+#result-transacoes tfoot tr td:nth-child(2) {
+  width: 45%;
 }/*# sourceMappingURL=style.css.map */

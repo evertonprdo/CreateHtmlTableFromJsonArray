@@ -1,11 +1,2 @@
-@import 'layout/desktop';
-table {
-    @include configDesktop();
-}
-
-@media only screen and not (orientation: landscape) {
-    @import 'layout/mobile';
-    table {
-        @include configMobile();
-    }
-}
+@import 'src/reset';
+@import 'assets/tabela';

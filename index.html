@@ -12,6 +12,7 @@
             <option value="">Entrada</option>
             <option value="">Saida</option>
         </select>
+        <input type="number">
         <label for="">Valor</label>
         <input type="range" name="" id="">
         <label for="">Data</label>
@@ -26,7 +27,7 @@
     </section>
 
     <!-- Tabela Dinamica -->
-    <table id="result">
+    <table id="result-transacoes">
         <thead>
             <tr>
                 <th data-columref="tipo.nome">Tipo</th>
@@ -43,6 +44,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -50,6 +52,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -57,6 +60,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -64,6 +68,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -71,6 +76,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -78,6 +84,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -85,6 +92,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -92,6 +100,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -99,6 +108,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -106,6 +116,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -113,6 +124,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -120,6 +132,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -127,6 +140,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
             <tr>
                 <td>Entrada</td>
@@ -134,6 +148,7 @@
                 <td>R$ 78,90</td>
                 <td>24/02/2024</td>
                 <td>Exemplo</td>
+                <td><a href="">$</a></td>
             </tr>
         </tbody>
         <tfoot>
@@ -207,7 +222,7 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const myTable = document.querySelector('#result');
+            const myTable = document.querySelector('#result-transacoes');
             const cabecalho = {};
 
             myTable.querySelectorAll('thead th').forEach(item => {
