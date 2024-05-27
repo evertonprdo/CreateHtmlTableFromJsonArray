@@ -5,16 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style/style.css">
+    <script>      
+        let controller = null;
+        let currentPromise = null;
+        
+        function requestServer() {
+            if (controller) {
+                controller.abort();
+            }
+
+            controller = new AbortController();
+            const signal = controller.signal;
+
+            currentPromise = new Promise(async (resolve, reject) => {
+                try {
+                    let reponse = await fetch('server.php', { signal });
+                    let data = await reponse.json();
+                    resolve(data);
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('Requisição abortada');
+                    } else {
+                        reject(error);
+                    }
+                } finally {
+                    controller = null;
+                }
+            });
+
+            return currentPromise;
+        }
+
+        function getFetchReponse(refresh = false) {
+            if (refresh) {
+                currentPromise = null;
+                return requestServer();
+            } else {
+                if(currentPromise) {
+                    return currentPromise;
+                } else {
+                    return requestServer();
+                }
+            }
+        }
+        getFetchReponse();
+    </script>
     <style>
         body {
-            margin: 20px auto;
+            margin: auto;
+            padding: 100px 0;
             max-width: 1280px;
-            height: 200vh;
         }
     </style>
 </head>
 <body>
-<!--
+    <!--
     <section class="filtros">
         <select name="" id="">
             <option value="">Entrada</option>
@@ -39,7 +84,7 @@
         <thead>
             <tr>
                 <th data-columref="tipo.nome">Tipo</th>
-                <th data-columref="desc">Descrição</th>
+                <th data-columref="descr">Descrição</th>
                 <th data-columref="valor">Valor</th>
                 <th data-columref="date">Data</th>
                 <th data-columref="categoria.nome">Categoria</th>
@@ -147,43 +192,51 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="2">Total</td>
-                <td colspan="3">R$ 25.778,90</td>
+                <td>R$ 00,00</td>
+                <td>Entrada:</td>
+                <td>R$ 00,00</td>
+                <td>Saida:</td>
+                <td>R$ 00,00</td>
             </tr>
         </tfoot>
     </table>
-    <button id="btn-click">Olá Mundo!</button>
-    
+
     <script id="tr-expand">
-        document.addEventListener("DOMContentLoaded", function() {
-        const trs = document.querySelectorAll('tbody tr');
+        document.addEventListener("DOMContentLoaded", syncAnimatedTable)
+        
+        function syncAnimatedTable() {
+            const trs = document.querySelectorAll('tbody tr');
 
             trs.forEach(function(tr) {
                 const originalHeight = tr.clientHeight;
-                const expandedHeight = originalHeight*1.5; // Altura final ao expandir
+                const expandedHeight = originalHeight * 1.5; // Altura final ao expandir
                 const animationDuration = 350; // Duração da animação em milissegundos
                 const increment = (expandedHeight - originalHeight) / (animationDuration / 16); // 16ms é o intervalo de tempo para cada frame (1000ms / 60fps)
 
                 let currentHeight = originalHeight;
                 let animationFrameId;
+                let isExpanded = false;
 
-                tr.addEventListener('mouseenter', function() {
+                tr.addEventListener('click', function(event) {
+                    event.preventDefault();
                     cancelAnimationFrame(animationFrameId);
-                    expand();
-                });
-
-                tr.addEventListener('mouseleave', function() {
-                    cancelAnimationFrame(animationFrameId);
-                    shrink();
+                    if (isExpanded) {
+                        shrink();
+                    } else {
+                        expand();
+                    }
                 });
 
                 function expand() {
                     if (currentHeight < expandedHeight) {
                         currentHeight += increment;
                         tr.style.height = currentHeight + 'px';
+                        tr.style.fontWeight = 'bold';
                         animationFrameId = requestAnimationFrame(expand);
                     } else {
                         tr.style.height = expandedHeight + 'px';
+                        tr.style.fontWeight = 'bold';
+                        isExpanded = true;
                     }
                 }
 
@@ -194,30 +247,31 @@
                         animationFrameId = requestAnimationFrame(shrink);
                     } else {
                         tr.style.height = originalHeight + 'px';
+                        tr.style.fontWeight = 'normal';
+                        isExpanded = false;
                     }
                 }
             });
-        });
+        };
     </script>
 
     <script id="TableJson">
         class TableJson {
-            constructor(data, cabecalhos, footer = false, filtros = 'DEFAULT') {
+            constructor(data, cabecalhos, footer = false) {
                 this.data = data;
                 this.cabecalhos = cabecalhos;
                 this.footer = footer;
-                this.filtros = filtros;
+                this.default_data = data;
             }
 
             renderTable(HtmlTable) {
                 const HtmlHeader = HtmlTable.getElementsByTagName('thead')[0];
                 const HtmlBody = HtmlTable.getElementsByTagName('tbody')[0];
-                const HtmlFooter = HtmlTable.getElementsByTagName('tfoot')[0];
+                const HtmlFoot = HtmlTable.getElementsByTagName('tfoot')[0];
                 
                 this.composeHeader(HtmlHeader);
-                //return HtmlHeader;
-                //composeBody(HtmlBody);
-                //composeFooter(HtmlFooter);
+                this.composeBody(HtmlBody);
+                this.composeFooter(HtmlFoot);
             }
 
             composeHeader(HtmlHeader) {
@@ -232,32 +286,125 @@
                 })
 
                 HtmlHeader.appendChild(row);
-                console.log("Olá");
-                return HtmlHeader;
             }
 
-            comporseBody(HtmlBody) {
-
+            composeBody(HtmlBody) {
+                HtmlBody.innerHTML = '';
+                this.data.forEach(element => {
+                    let row = this.composeBodyRow(element);
+                    HtmlBody.appendChild(row);
+                });
             }
 
-            composeFooter(HtmlFooter) {
+            composeBodyRow(jrow) {
+                let row = document.createElement('tr');
+                Object.keys(this.cabecalhos).forEach(key => {
+                    let value = Helpers.getNestedPropety(jrow, key);
+                    let cell = document.createElement('td');
+                    
+                    value = Helpers.renderByTypeOf(value, true, 40);
+                    cell.innerText = value;
+                    row.appendChild(cell);
+                })
+                return row;
+            }
 
+            composeFooter(HtmlFoot) {
+                let data_out = FiltroTableJson.filterDataByPath(this.data, 'tipo.id', 2);
+                let data_in = FiltroTableJson.filterDataByPath(this.data, 'tipo.id', 1);
+                
+                let total_in = 0;
+                let total_out = 0;
+                
+                data_in.forEach(item => {
+                    total_in += !isNaN(item['valor']) ? parseFloat(item['valor']) : 0;
+                })
+                data_out.forEach(item => {
+                    total_out += !isNaN(item['valor']) ? parseFloat(item['valor']) : 0;
+                })
+
+                let balanco = total_in - total_out;
+
+                const out_cell = HtmlFoot.querySelector('tr > td:last-child');
+                const in_cell = HtmlFoot.querySelector('tr > td:nth-child(3)');
+                const b_cell = HtmlFoot.querySelector('tr > td:first-child');
+                
+                out_cell.innerText = Helpers.formatBRL(total_out);
+                in_cell.innerText = Helpers.formatBRL(total_in);
+                b_cell.innerText = Helpers.formatBRL(balanco);
+            }
+        }
+    </script>
+
+    <script>
+        class FiltroTableJson {
+            static filterDataByPath(data, path, filter) {
+                const values = [];
+
+                data.forEach(item => {
+                    if (Helpers.getNestedPropety(item, path) == filter) {
+                        values.push(item);
+                    }
+                })
+                return values;
             }
         }
     </script>
 
     <script id="Helpers">
         class Helpers {
-            static soma(a, b) {
-                return a + b;
+            static getNestedPropety(obj, path) {
+                const keys = path.split('.');
+                return keys.reduce((acc, key) => acc[key], obj);
             }
 
-            static subtracao(a, b) {
-                return a - b;
+            static renderByTypeOf(value, money = false, str_max_lenght = false) {
+                let format_value;
+
+                if(!isNaN(value) && value !== null) {
+                    if (money) {
+                        format_value = this.formatBRL(parseFloat(value));
+                    } else {
+                        format_value = parseFloat(value).toFixed(2);
+                    }
+                } else if(!isNaN(new Date(value).getTime())) {
+                    format_value = new Date(value).toLocaleDateString();
+                     
+                } else {
+                    if (str_max_lenght) {
+                        format_value = this.resumeString(value.trim(), str_max_lenght, true);
+                    } else {
+                        format_value = value;
+                    }
+                }
+                return format_value;
             }
 
-            static multiplicacao(a, b) {
-                return a * b;
+            static formatBRL(value) {
+                return value.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            static resumeString(str, max, cont = false) {
+                if(str.length > max) {
+                    if (cont) {
+                        return str.substring(0, max -3) + "...";
+                    } else {
+                        return str.sunstring(0, max);
+                    }
+                }
+                return str;
+            }
+
+            static sumArray(values) {
+                const sum_values = values.reduce((acc, value) => {
+                    return acc + parseFloat(value);
+                }, 0);
+                return sum_values;
             }
         }
     </script>
@@ -266,15 +413,21 @@
         document.addEventListener('DOMContentLoaded', function () {
             const myTable = document.querySelector('#result-transacoes');
             const cabecalho = {};
+            let tabela;
+            let tfoot_key = "valor"
 
             myTable.querySelectorAll('thead th').forEach(item => {
                 cabecalho[item.dataset.columref] = item.innerText;
             });
-
-            let tabela = new TableJson('Olá Mundo!', cabecalho);
-            document.querySelector('#btn-click').addEventListener('click', function () {
-                tabela.renderTable(myTable)
-            })
+            
+            function refreshTable(refresh = false) {
+                getFetchReponse(refresh).then(data => {
+                    tabela = new TableJson(data, cabecalho, tfoot_key);
+                    tabela.renderTable(myTable);
+                    syncAnimatedTable();
+                })
+            }
+            refreshTable();
         })
     </script>
 </body>

@@ -19,7 +19,6 @@
 }
 
 @mixin thead() {
-    height: 100%;
     position: sticky;
     top: 0;
     z-index: 1;
@@ -53,12 +52,12 @@
     @if $top {
 
     } @else {
-        &:first-child {
-            width: 57%;
+        width: 20%;
+
+        &:nth-child(even) {
+            text-align: end;
         }
-        &:last-child {
-            width: 43%;
-        }
+
     }
 }
 

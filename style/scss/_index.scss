@@ -2,8 +2,4 @@
 
 @import 'src/reset';
 
-.filtros {
-    display: none;
-}
-
 @include table.build();
