@@ -55,21 +55,6 @@
     <section class="main-content">
         <nav>
             <section class="filtros" id="filtros">
-                <select name="" id="">
-                    <option value="">Entrada</option>
-                    <option value="">Saida</option>
-                </select>
-                <input type="number">
-                <label for="">Valor</label>
-                <input type="range" name="" id="">
-                <label for="">Data</label>
-                <input type="range" name="" id="">
-                <select name="" id="">
-                    <option value="">Exemplo</option>
-                    <option value="">Teste</option>
-                    <option value="">Exercicio</option>
-                </select>
-                <input type="search" name="" id="">
                 <button id="btn-click">Atualizar</button>
             </section>
         </nav>
@@ -184,21 +169,30 @@
 
     <script id="JsonTable">
         class JsonTable {
-            constructor(data, cabecalhos, tfoot = false) {
+            constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
                 this.data = data;
                 this.cabecalhos = cabecalhos;
                 this.tfoot = tfoot;
+                this.tfoot_ignore = tfoot_ignore;
+
                 this.default_data = data;
             }
 
             renderTable(HtmlTable) {
                 const HtmlHeader = HtmlTable.getElementsByTagName('thead')[0];
                 const HtmlBody = HtmlTable.getElementsByTagName('tbody')[0];
-                const HtmlFoot = HtmlTable.getElementsByTagName('tfoot')[0];
-
+                
                 this.composeHeader(HtmlHeader);
                 this.composeBody(HtmlBody);
-                this.tfoot ? this.composeFooter(HtmlFoot) : false;
+                
+                if (this.tfoot) {
+                    const HtmlFoot = HtmlTable.getElementsByTagName('tfoot')[0];
+                    if (this.tfoot_ignore) {
+                        this.composeFooter(HtmlFoot, this.tfoot_ignore);
+                    } else{
+                        this.composeFooter(HtmlFoot)
+                    }
+                }
             }
 
             composeHeader(HtmlHeader) {
@@ -236,12 +230,19 @@
                 return row;
             }
 
-            composeFooter(HtmlFoot) {
+            composeFooter(HtmlFoot, ignore) {
                 HtmlFoot.innerHTML = '';
                 const HtmlFootTr = document.createElement('tr');
+                let foot_cabecalhos;
                 let i = 0;
 
-                Object.keys(this.cabecalhos).forEach(key => {
+                if (ignore) {
+                    foot_cabecalhos = Object.keys(this.cabecalhos).filter((cabecalho => !ignore.includes(cabecalho)));
+                } else {
+                    foot_cabecalhos = this.cabecalhos;
+                }
+
+                Object.keys(foot_cabecalhos).forEach(key => {
                     const html_td = document.createElement('td');
                     if (this.isColumnNumerable(key)) {
                         let soma = 0;
@@ -276,11 +277,15 @@
 
     <script>
         class FilterableJsonTable extends JsonTable {
+            constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
+                super(data, cabecalhos, tfoot, tfoot_ignore);
+                this.filter_current_id = 0;
+            }
 
-            filterByPath(data, path, filter) {
+            filterByPath(path, filter) {
                 const values = [];
 
-                data.forEach(item => {
+                this.data.forEach(item => {
                     if (Helpers.getNestedPropety(item, path) == filter) {
                         values.push(item);
                     }
@@ -288,8 +293,8 @@
                 return values;
             }
 
-            static orderByPath(data, path, ord = false) {
-                const ord_data = data;
+            orderByPath(path, ord = false) {
+                const ord_data = this.data;
                 
                 ord_data.sort((a, b) => {
                     let a_value = Helpers.getNestedPropety(a, path); 
@@ -298,7 +303,7 @@
 
                     if(Helpers.isNumerable(a_value)) {
                         return ord ? a_value - b_value : b_value - a_value;
-                    } else if (Helpers.isDateble(a_value)) {
+                    } else if (Helpers.isDateable(a_value)) {
                         if (ord) {
                             res = a_value < b_value ? -1 : a_value > b_value ? 1 : 0;
                             return res;
@@ -313,28 +318,73 @@
                 return ord_data;
             }
 
-            static composeFiltros(element = null, search = false) {
-                //index
-                    //isIndexable?
-                        //inputType(type)
-                //data
-                    //isDatable?
-                        //inputType(type)
-                //number
-                    //isNumerable?
-                        //inputType(type)
-                //search
-                    //searchOn?
-                //radio
-                    //isRadioOn?
-                //checkbox
-                    //isCheckboxOn?
-                //range
-                    //isRangeOn?
-                //text range
-                    //isTextRangeOn?
-                //selec
-                    //isSelectOn?
+            composeSelectFilter(cabecalho, label) {
+                const select = document.createElement('select');
+                const options_array = [];
+
+                select.id = Helpers.stringToSlug(label) + this.filter_current_id;
+
+                this.data.forEach(item => {
+                    let value = Helpers.getNestedPropety(item, cabecalho);
+                    let alredy = options_array.some(cabecalho => {
+                        return cabecalho == value;
+                    });
+                    if(!alredy) {
+                        options_array.push(value);
+                        const option = document.createElement('option');
+
+                        option.value = Helpers.stringToSlug(value.toLowerCase());
+                        option.innerText = value;
+                        select.appendChild(option);
+                    }
+                })
+                return select;
+            }
+
+            composeDefaultFilter(type, label) {
+                const div_filter = document.createElement('div');
+                const id_filter = type + this.filter_current_id;
+                
+                const input_filter = this.composeInput(type, id_filter, '', '2024-11-30');
+                const label_filter = this.composeLabel(label, id_filter);
+
+                div_filter.className = 'default-filter';
+                div_filter.appendChild(label_filter);
+                div_filter.appendChild(input_filter);
+                
+                this.filter_current_id++;
+                return div_filter;
+            }
+
+            composeInput(type = 'text', id, classe, value) {
+                const input = document.createElement('input');
+                if (type) {
+                    input.type = type;
+                }
+                if (id) {
+                    input.id = id;
+                }
+                if (classe) {
+                    input.className = classe;
+                }
+                if (value) {
+                    input.value = value;
+                }
+                return input;
+            }
+
+            composeLabel(value, id, classe) {
+                const label = document.createElement('label');
+                if (value) {
+                    label.innerText = value;
+                }
+                if (id) {
+                    label.htmlFor = id;
+                }
+                if (classe) {
+                    label.className = classe;
+                }
+                return label;
             }
 
             isIndexable(column) {
@@ -362,7 +412,7 @@
                 return (!isNaN(value) && value !== null) ? true : false;
             }
 
-            static isDateble(value) {;
+            static isDateable(value) {;
                 return (!isNaN(new Date(value).getTime())) ? true : false;
             }
 
@@ -375,7 +425,7 @@
                     } else {
                         format_value = parseFloat(value).toFixed(2);
                     }
-                } else if(this.isDateble(value)) {
+                } else if(this.isDateable(value)) {
                     format_value = new Date(value).toLocaleDateString();
                      
                 } else {
@@ -414,12 +464,23 @@
                 }, 0);
                 return sum_values;
             }
+
+            static stringToSlug(texto) {
+                return texto.normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '') // Remove caracteres diacríticos
+                    .toLowerCase() // Converte para minúsculas
+                    .replace(/\s+/g, '-') // Substitui espaços em branco por traços
+                    .replace(/[^a-z0-9-]/g, '') // Remove caracteres não alfanuméricos ou traços
+                    .replace(/--+/g, '-') // Substitui múltiplos traços consecutivos por um único traço
+                    .replace(/^-+|-+$/g, ''); // Remove traços do início e do final
+            }
         }
     </script>
     
     <script id="tableAdmin">
         document.addEventListener('DOMContentLoaded', function () {
             const myTable = document.querySelector('#result-transacoes');
+            const myTableMenu = document.querySelector('nav > section');
             const cabecalho = {};
 
             let tabela;
@@ -449,16 +510,27 @@
                             ordAtual = coluna;
                             ord = true;
                         }
-                        tabela.data = FilterableJsonTable.orderByPath(tabela.data, coluna, ord);
+                        tabela.orderByPath(coluna, ord);
                         tabela.renderTable(myTable);
                         syncAllTable();
                     })
                 })
             }
+
+            function renderFilter() {
+                //const filtro = tabela.composeDefaultFilter('number', 'Label de Teste');
+                const mySelect = tabela.composeSelectFilter('categoria.nome', 'Descrição');
+                myTableMenu.appendChild(mySelect);
+            }
+            
+            document.querySelector('#btn-click').addEventListener('click', function(e) {
+                e.preventDefault();
+                renderFilter();
+            })
             
             function refreshTable(refresh_data = false) {
                 getFetchReponse(refresh_data).then(data => {
-                    tabela = new FilterableJsonTable(data, cabecalho, true);
+                    tabela = new FilterableJsonTable(data, cabecalho);
                     tabela.renderTable(myTable);
                     syncAllTable();
                 })
