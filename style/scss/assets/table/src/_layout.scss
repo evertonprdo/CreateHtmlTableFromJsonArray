@@ -48,17 +48,6 @@
 @mixin th($top: true) {
     @include td();
     padding: 10px;
-
-    @if $top {
-
-    } @else {
-        width: 20%;
-
-        &:nth-child(even) {
-            text-align: end;
-        }
-
-    }
 }
 
 // ----- Fim do Escopo Principal ----- //

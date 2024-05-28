@@ -1,5 +1,30 @@
 @use 'assets/table/table';
 
-@import 'src/reset';
+//@import 'src/reset';
 
 @include table.build();
+
+body {
+    max-width: 1920px;
+    margin: auto;
+}
+
+section.main-content {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+
+    & > aside, nav {
+        & > section {
+            position: sticky;
+            top: 0;
+
+            padding: 10px;
+        }
+        width: 20%;
+    }
+
+    & > main {
+        width: 60%;
+    }
+}

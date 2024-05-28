@@ -50,156 +50,83 @@
         }
         getFetchReponse();
     </script>
-    <style>
-        body {
-            margin: auto;
-            padding: 100px 0;
-            max-width: 1280px;
-        }
-    </style>
 </head>
 <body>
-    <!--
-    <section class="filtros">
-        <select name="" id="">
-            <option value="">Entrada</option>
-            <option value="">Saida</option>
-        </select>
-        <input type="number">
-        <label for="">Valor</label>
-        <input type="range" name="" id="">
-        <label for="">Data</label>
-        <input type="range" name="" id="">
-        <select name="" id="">
-            <option value="">Exemplo</option>
-            <option value="">Teste</option>
-            <option value="">Exercicio</option>
-        </select>
-        <input type="search" name="" id="">
-        <button id="btn-click">Atualizar</button>
+    <section class="main-content">
+        <nav>
+            <section class="filtros" id="filtros">
+                <select name="" id="">
+                    <option value="">Entrada</option>
+                    <option value="">Saida</option>
+                </select>
+                <input type="number">
+                <label for="">Valor</label>
+                <input type="range" name="" id="">
+                <label for="">Data</label>
+                <input type="range" name="" id="">
+                <select name="" id="">
+                    <option value="">Exemplo</option>
+                    <option value="">Teste</option>
+                    <option value="">Exercicio</option>
+                </select>
+                <input type="search" name="" id="">
+                <button id="btn-click">Atualizar</button>
+            </section>
+        </nav>
+        <main>
+            <!-- Tabela Dinamica -->
+            <table id="result-transacoes">
+                <thead>
+                    <tr>
+                        <th data-columnref="tipo.nome">Tipo</th>
+                        <th data-columnref="descr">Descrição</th>
+                        <th data-columnref="valor">Valor</th>
+                        <th data-columnref="date">Data</th>
+                        <th data-columnref="categoria.nome">Categoria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IN</td>
+                        <td>Descrição Genérica para estilo</td>
+                        <td>R$ 78,90</td>
+                        <td>24/02/2024</td>
+                        <td>Exemplo</td>
+                    </tr>
+                    <tr>
+                        <td>IN</td>
+                        <td>Descrição Genérica para estilo</td>
+                        <td>R$ 78,90</td>
+                        <td>24/02/2024</td>
+                        <td>Exemplo</td>
+                    </tr>
+                    <tr>
+                        <td>IN</td>
+                        <td>Descrição Genérica para estilo</td>
+                        <td>R$ 78,90</td>
+                        <td>24/02/2024</td>
+                        <td>Exemplo</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </main>
+        <aside>
+            <section class="resumo">
+                <h2>Resumo</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse voluptate, aliquam nisi ducimus, temporibus aut autem rerum iusto, eligendi facere quis excepturi necessitatibus adipisci veniam aspernatur corrupti? Autem, possimus rerum?</p>
+                <h3>Conclução</h3>
+            </section>
+        </aside>
     </section>
--->
-    <!-- Tabela Dinamica -->
-    <table id="result-transacoes">
-        <thead>
-            <tr>
-                <th data-columref="tipo.nome">Tipo</th>
-                <th data-columref="descr">Descrição</th>
-                <th data-columref="valor">Valor</th>
-                <th data-columref="date">Data</th>
-                <th data-columref="categoria.nome">Categoria</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>OUT</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>OUT</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>OUT</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>OUT</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-            <tr>
-                <td>IN</td>
-                <td>Descrição Genérica para estilo</td>
-                <td>R$ 78,90</td>
-                <td>24/02/2024</td>
-                <td>Exemplo</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td>R$ 00,00</td>
-                <td>Entrada:</td>
-                <td>R$ 00,00</td>
-                <td>Saida:</td>
-                <td>R$ 00,00</td>
-            </tr>
-        </tfoot>
-    </table>
 
     <script id="tr-expand">
         document.addEventListener("DOMContentLoaded", syncAnimatedTable)
@@ -255,12 +182,12 @@
         };
     </script>
 
-    <script id="TableJson">
-        class TableJson {
-            constructor(data, cabecalhos, footer = false) {
+    <script id="JsonTable">
+        class JsonTable {
+            constructor(data, cabecalhos, tfoot = false) {
                 this.data = data;
                 this.cabecalhos = cabecalhos;
-                this.footer = footer;
+                this.tfoot = tfoot;
                 this.default_data = data;
             }
 
@@ -268,10 +195,10 @@
                 const HtmlHeader = HtmlTable.getElementsByTagName('thead')[0];
                 const HtmlBody = HtmlTable.getElementsByTagName('tbody')[0];
                 const HtmlFoot = HtmlTable.getElementsByTagName('tfoot')[0];
-                
+
                 this.composeHeader(HtmlHeader);
                 this.composeBody(HtmlBody);
-                this.composeFooter(HtmlFoot);
+                this.tfoot ? this.composeFooter(HtmlFoot) : false;
             }
 
             composeHeader(HtmlHeader) {
@@ -280,7 +207,7 @@
 
                 Object.keys(this.cabecalhos).forEach(key => {
                     let cell = document.createElement('th');
-                    cell.setAttribute('data-columref', key);
+                    cell.setAttribute('data-columnref', key);
                     cell.innerText = this.cabecalhos[key];
                     row.appendChild(cell);
                 })
@@ -310,35 +237,47 @@
             }
 
             composeFooter(HtmlFoot) {
-                let data_out = FiltroTableJson.filterDataByPath(this.data, 'tipo.id', 2);
-                let data_in = FiltroTableJson.filterDataByPath(this.data, 'tipo.id', 1);
-                
-                let total_in = 0;
-                let total_out = 0;
-                
-                data_in.forEach(item => {
-                    total_in += !isNaN(item['valor']) ? parseFloat(item['valor']) : 0;
-                })
-                data_out.forEach(item => {
-                    total_out += !isNaN(item['valor']) ? parseFloat(item['valor']) : 0;
-                })
+                HtmlFoot.innerHTML = '';
+                const HtmlFootTr = document.createElement('tr');
+                let i = 0;
 
-                let balanco = total_in - total_out;
+                Object.keys(this.cabecalhos).forEach(key => {
+                    const html_td = document.createElement('td');
+                    if (this.isColumnNumerable(key)) {
+                        let soma = 0;
+                        this.data.forEach(item => {
+                            let value = Helpers.getNestedPropety(item, key);
+                            soma += Helpers.isNumerable(value) ? parseFloat(value) : 0;
+                        })
+                        html_td.innerText = Helpers.formatBRL(soma);
+                        HtmlFootTr.appendChild(html_td);
+                        i++;
+                    } else {
+                        html_td.innerText = i === 0 ? 'Total' : '';
+                        HtmlFootTr.appendChild(html_td);
+                        i++;
+                    }
+                })
+                HtmlFoot.appendChild(HtmlFootTr);
+            }
 
-                const out_cell = HtmlFoot.querySelector('tr > td:last-child');
-                const in_cell = HtmlFoot.querySelector('tr > td:nth-child(3)');
-                const b_cell = HtmlFoot.querySelector('tr > td:first-child');
-                
-                out_cell.innerText = Helpers.formatBRL(total_out);
-                in_cell.innerText = Helpers.formatBRL(total_in);
-                b_cell.innerText = Helpers.formatBRL(balanco);
+            setDefaultData() {
+                this.data = this.default_data;
+            }
+
+            isColumnNumerable(column) {
+                return this.data.some(item => {
+                    let value = Helpers.getNestedPropety(item, column);
+                    return Helpers.isNumerable(value);
+                })
             }
         }
     </script>
 
     <script>
-        class FiltroTableJson {
-            static filterDataByPath(data, path, filter) {
+        class FilterableJsonTable extends JsonTable {
+
+            filterByPath(data, path, filter) {
                 const values = [];
 
                 data.forEach(item => {
@@ -347,6 +286,67 @@
                     }
                 })
                 return values;
+            }
+
+            static orderByPath(data, path, ord = false) {
+                const ord_data = data;
+                
+                ord_data.sort((a, b) => {
+                    let a_value = Helpers.getNestedPropety(a, path); 
+                    let b_value = Helpers.getNestedPropety(b, path);
+                    let res;
+
+                    if(Helpers.isNumerable(a_value)) {
+                        return ord ? a_value - b_value : b_value - a_value;
+                    } else if (Helpers.isDateble(a_value)) {
+                        if (ord) {
+                            res = a_value < b_value ? -1 : a_value > b_value ? 1 : 0;
+                            return res;
+                        } else {
+                            res = a_value > b_value ? -1 : a_value < b_value ? 1 : 0;
+                            return res;
+                        }
+                    } else {
+                        return ord ? a_value.localeCompare(b_value) : b_value.localeCompare(a_value);
+                    }
+                });
+                return ord_data;
+            }
+
+            static composeFiltros(element = null, search = false) {
+                //index
+                    //isIndexable?
+                        //inputType(type)
+                //data
+                    //isDatable?
+                        //inputType(type)
+                //number
+                    //isNumerable?
+                        //inputType(type)
+                //search
+                    //searchOn?
+                //radio
+                    //isRadioOn?
+                //checkbox
+                    //isCheckboxOn?
+                //range
+                    //isRangeOn?
+                //text range
+                    //isTextRangeOn?
+                //selec
+                    //isSelectOn?
+            }
+
+            isIndexable(column) {
+
+            }
+
+            screateFilterElement(type = null) {
+
+            }
+
+            static isNumerable(column, data) {
+
             }
         }
     </script>
@@ -358,16 +358,24 @@
                 return keys.reduce((acc, key) => acc[key], obj);
             }
 
+            static isNumerable(value) {
+                return (!isNaN(value) && value !== null) ? true : false;
+            }
+
+            static isDateble(value) {;
+                return (!isNaN(new Date(value).getTime())) ? true : false;
+            }
+
             static renderByTypeOf(value, money = false, str_max_lenght = false) {
                 let format_value;
 
-                if(!isNaN(value) && value !== null) {
+                if(this.isNumerable(value)) {
                     if (money) {
                         format_value = this.formatBRL(parseFloat(value));
                     } else {
                         format_value = parseFloat(value).toFixed(2);
                     }
-                } else if(!isNaN(new Date(value).getTime())) {
+                } else if(this.isDateble(value)) {
                     format_value = new Date(value).toLocaleDateString();
                      
                 } else {
@@ -409,22 +417,50 @@
         }
     </script>
     
-    <script>
+    <script id="tableAdmin">
         document.addEventListener('DOMContentLoaded', function () {
             const myTable = document.querySelector('#result-transacoes');
             const cabecalho = {};
+
             let tabela;
-            let tfoot_key = "valor"
+            let ordAtual = null;
+            let ord = true;
 
             myTable.querySelectorAll('thead th').forEach(item => {
-                cabecalho[item.dataset.columref] = item.innerText;
+                cabecalho[item.dataset.columnref] = item.innerText;
             });
+
+            function syncAllTable() {
+                syncAnimatedTable();
+                syncThClick();
+            }
+
+            function syncThClick() {
+                const html_ths = myTable.querySelectorAll('thead th');
+                
+                html_ths.forEach(th => {
+                    th.addEventListener('click', function() {
+                        
+                        const coluna = this.dataset.columnref;
+                        
+                        if (ordAtual === coluna) {
+                            ord = !ord;
+                        } else {
+                            ordAtual = coluna;
+                            ord = true;
+                        }
+                        tabela.data = FilterableJsonTable.orderByPath(tabela.data, coluna, ord);
+                        tabela.renderTable(myTable);
+                        syncAllTable();
+                    })
+                })
+            }
             
-            function refreshTable(refresh = false) {
-                getFetchReponse(refresh).then(data => {
-                    tabela = new TableJson(data, cabecalho, tfoot_key);
+            function refreshTable(refresh_data = false) {
+                getFetchReponse(refresh_data).then(data => {
+                    tabela = new FilterableJsonTable(data, cabecalho, true);
                     tabela.renderTable(myTable);
-                    syncAnimatedTable();
+                    syncAllTable();
                 })
             }
             refreshTable();

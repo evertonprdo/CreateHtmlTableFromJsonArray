@@ -58,6 +58,8 @@
                     @include high.th();
 
                     @include Helpers.round(skin.$conf-round, $top: false);
+                    @include layout.colConfig();
+                    @include skin.colConfig();
                 }
             }
         }
