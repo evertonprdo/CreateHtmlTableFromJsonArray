@@ -55,7 +55,6 @@
     <section class="main-content">
         <nav>
             <section class="filtros" id="filtros">
-                <button id="btn-click">Atualizar</button>
             </section>
         </nav>
         <main>
@@ -104,13 +103,6 @@
                 </tfoot>
             </table>
         </main>
-        <aside>
-            <section class="resumo">
-                <h2>Resumo</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse voluptate, aliquam nisi ducimus, temporibus aut autem rerum iusto, eligendi facere quis excepturi necessitatibus adipisci veniam aspernatur corrupti? Autem, possimus rerum?</p>
-                <h3>Conclução</h3>
-            </section>
-        </aside>
     </section>
 
     <script id="tr-expand">
@@ -167,361 +159,15 @@
         };
     </script>
 
-    <script id="JsonTable">
-        class JsonTable {
-            #default_data;
-
-            constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
-                this.data = data;
-                this.cabecalhos = cabecalhos;
-                this.tfoot = tfoot;
-                this.tfoot_ignore = tfoot_ignore;
-
-                this.#default_data = data;
-            }
-
-            renderTable(HtmlTable) {
-                const HtmlHeader = HtmlTable.getElementsByTagName('thead')[0];
-                const HtmlBody = HtmlTable.getElementsByTagName('tbody')[0];
-                
-                this.composeHeader(HtmlHeader);
-                this.composeBody(HtmlBody);
-                
-                if (this.tfoot) {
-                    const HtmlFoot = HtmlTable.getElementsByTagName('tfoot')[0];
-                    if (this.tfoot_ignore) {
-                        this.composeFooter(HtmlFoot, this.tfoot_ignore);
-                    } else{
-                        this.composeFooter(HtmlFoot)
-                    }
-                }
-            }
-
-            composeHeader(HtmlHeader) {
-                let row = document.createElement('tr');
-                HtmlHeader.innerHTML = ''; 
-
-                Object.keys(this.cabecalhos).forEach(key => {
-                    let cell = document.createElement('th');
-                    cell.setAttribute('data-columnref', key);
-                    cell.innerText = this.cabecalhos[key];
-                    row.appendChild(cell);
-                })
-
-                HtmlHeader.appendChild(row);
-            }
-
-            composeBody(HtmlBody) {
-                HtmlBody.innerHTML = '';
-                this.data.forEach(element => {
-                    let row = document.createElement('tr');
-                        Object.keys(this.cabecalhos).forEach(key => {
-                            let value = Helpers.getNestedPropety(element, key);
-                            let cell = document.createElement('td');
-                            
-                            value = Helpers.renderByTypeOf(value, true, 40);
-                            cell.innerText = value;
-                            row.appendChild(cell);
-                        })
-                    HtmlBody.appendChild(row);
-                });
-            }
-
-            composeFooter(HtmlFoot, ignore) {
-                HtmlFoot.innerHTML = '';
-                const HtmlFootTr = document.createElement('tr');
-                let foot_cabecalhos;
-                let i = 0;
-
-                if (ignore) {
-                    foot_cabecalhos = Object.keys(this.cabecalhos).filter((cabecalho => !ignore.includes(cabecalho)));
-                } else {
-                    foot_cabecalhos = this.cabecalhos;
-                }
-
-                Object.keys(foot_cabecalhos).forEach(key => {
-                    const html_td = document.createElement('td');
-                    if (this.isColumnNumerable(key)) {
-                        let soma = 0;
-                        this.data.forEach(item => {
-                            let value = Helpers.getNestedPropety(item, key);
-                            soma += Helpers.isNumerable(value) ? parseFloat(value) : 0;
-                        })
-                        html_td.innerText = Helpers.formatBRL(soma);
-                        HtmlFootTr.appendChild(html_td);
-                        i++;
-                    } else {
-                        html_td.innerText = i === 0 ? 'Total' : '';
-                        HtmlFootTr.appendChild(html_td);
-                        i++;
-                    }
-                })
-                HtmlFoot.appendChild(HtmlFootTr);
-            }
-
-            setDefaultData() {
-                this.data = this.#default_data;
-            }
-
-            isColumnNumerable(column) {
-                return this.data.some(item => {
-                    let value = Helpers.getNestedPropety(item, column);
-                    return Helpers.isNumerable(value);
-                })
-            }
-        }
-    </script>
-
-    <script>
-        class FilterableJsonTable extends JsonTable {
-            constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
-                super(data, cabecalhos, tfoot, tfoot_ignore);
-                this.filter_current_id = 0;
-                
-                this.options = {};
-                this.range_options = {};
-            }
-
-            setFilterOption(key, value) {
-                this.options[key] = value;
-            }
-
-            setFilterRange(key, min, max) {
-                this.range_options[key] = {'min': min, 'max': max};
-            }
-
-            removeFilterOption(key) {
-                delete this.options[key];
-                delete this.range_options[key];
-            }
-
-            resetFilterOptions() {
-                this.options = {};
-            }
-
-            setFilteredTable() {
-                const columns = Object.keys(this.options);
-                const range_columns = Object.keys(this.range_options);
-                const compare = columns.length + range_columns.length;
-                const values = [];
-
-                this.data.forEach(item => {
-                    let count_true = 0;
-                    columns.forEach(key => {
-                        let valor = Helpers.getNestedPropety(item, key);
-                        if (this.options[key] == valor) {
-                            count_true++;
-                        }
-                    })
-                    range_columns.forEach(key => {
-                        const min = this.range_options[key].min;
-                        const max = this.range_options[key].max;
-                        
-                        let valor = Helpers.getNestedPropety(item, key);
-                        
-                        if (Helpers.isNumerable(valor)) {
-                            let number = parseFloat(valor);
-                            if (number >= min && number <= max) {
-                                count_true++;
-                            }
-                        } else if(Helpers.isDateable(valor)) {
-                            let date = new Date(valor).getTime();
-                            if (date >= min && date <= max) {
-                                count_true++;
-                            }
-                        }
-                    })
-                    if (compare === count_true) {
-                        values.push(item);
-                    }
-                })
-                this.data = values;
-            }
-
-            orderByPath(path, ord = false) {
-                const ord_data = this.data;
-                
-                ord_data.sort((a, b) => {
-                    let a_value = Helpers.getNestedPropety(a, path); 
-                    let b_value = Helpers.getNestedPropety(b, path);
-                    let res;
-
-                    if(Helpers.isNumerable(a_value)) {
-                        return ord ? a_value - b_value : b_value - a_value;
-                    } else if (Helpers.isDateable(a_value)) {
-                        if (ord) {
-                            res = a_value < b_value ? -1 : a_value > b_value ? 1 : 0;
-                            return res;
-                        } else {
-                            res = a_value > b_value ? -1 : a_value < b_value ? 1 : 0;
-                            return res;
-                        }
-                    } else {
-                        return ord ? a_value.localeCompare(b_value) : b_value.localeCompare(a_value);
-                    }
-                });
-                return ord_data;
-            }
-
-            composeSelectFilter(cabecalho, label, value_path) {
-                const select = document.createElement('select');
-                const options_array = [];
-                const option = document.createElement('option');
-
-                option.innerText = 'All '+ label;
-                option.value = 0;
-                
-                select.id = Helpers.stringToSlug(label) + this.filter_current_id;
-                select.appendChild(option);
-
-                this.data.forEach(item => {
-                    let value = Helpers.getNestedPropety(item, cabecalho);
-                    let alredy = options_array.some(cabecalho => {
-                        return cabecalho == value;
-                    });
-                    if(!alredy) {
-                        options_array.push(value);
-                        const option = document.createElement('option');
-
-                        option.value = value_path ?
-                            Helpers.getNestedPropety(item, value_path) : 
-                            Helpers.stringToSlug(value.toLowerCase())
-                        ;
-                        option.innerText = value;
-                        select.appendChild(option);
-                    }
-                })
-                return select;
-            }
-
-            composeDefaultFilter(type, label) {
-                const div_filter = document.createElement('div');
-                const id_filter = type + this.filter_current_id;
-                
-                const input_filter = this.composeInput(type, id_filter, '', '2024-11-30');
-                const label_filter = this.composeLabel(label, id_filter);
-
-                div_filter.className = 'default-filter';
-                div_filter.appendChild(label_filter);
-                div_filter.appendChild(input_filter);
-                
-                this.filter_current_id++;
-                return div_filter;
-            }
-
-            composeInput(type = 'text', id, classe, value) {
-                const input = document.createElement('input');
-                if (type) {
-                    input.type = type;
-                }
-                if (id) {
-                    input.id = id;
-                }
-                if (classe) {
-                    input.className = classe;
-                }
-                if (value) {
-                    input.value = value;
-                }
-                return input;
-            }
-
-            composeLabel(value, id, classe) {
-                const label = document.createElement('label');
-                if (value) {
-                    label.innerText = value;
-                }
-                if (id) {
-                    label.htmlFor = id;
-                }
-                if (classe) {
-                    label.className = classe;
-                }
-                return label;
-            }
-        }
-    </script>
-
-    <script id="Helpers">
-        class Helpers {
-            static getNestedPropety(obj, path) {
-                const keys = path.split('.');
-                return keys.reduce((acc, key) => acc[key], obj);
-            }
-
-            static isNumerable(value) {
-                return (!isNaN(value) && value !== null) ? true : false;
-            }
-
-            static isDateable(value) {;
-                return (!isNaN(new Date(value).getTime())) ? true : false;
-            }
-
-            static renderByTypeOf(value, money = false, str_max_lenght = false) {
-                let format_value;
-
-                if(this.isNumerable(value)) {
-                    if (money) {
-                        format_value = this.formatBRL(parseFloat(value));
-                    } else {
-                        format_value = parseFloat(value).toFixed(2);
-                    }
-                } else if(this.isDateable(value)) {
-                    format_value = new Date(value).toLocaleDateString();
-                     
-                } else {
-                    if (str_max_lenght) {
-                        format_value = this.resumeString(value.trim(), str_max_lenght, true);
-                    } else {
-                        format_value = value;
-                    }
-                }
-                return format_value;
-            }
-
-            static formatBRL(value) {
-                return value.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            }
-
-            static resumeString(str, max, cont = false) {
-                if(str.length > max) {
-                    if (cont) {
-                        return str.substring(0, max -3) + "...";
-                    } else {
-                        return str.sunstring(0, max);
-                    }
-                }
-                return str;
-            }
-
-            static sumArray(values) {
-                const sum_values = values.reduce((acc, value) => {
-                    return acc + parseFloat(value);
-                }, 0);
-                return sum_values;
-            }
-
-            static stringToSlug(texto) {
-                return texto.normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '') // Remove caracteres diacríticos
-                    .toLowerCase() // Converte para minúsculas
-                    .replace(/\s+/g, '-') // Substitui espaços em branco por traços
-                    .replace(/[^a-z0-9-]/g, '') // Remove caracteres não alfanuméricos ou traços
-                    .replace(/--+/g, '-') // Substitui múltiplos traços consecutivos por um único traço
-                    .replace(/^-+|-+$/g, ''); // Remove traços do início e do final
-            }
-        }
-    </script>
+    <script src="src/Helpers.js"></script>
+    <script src="src/JsonTable.js"></script>
+    <script src="src/FilterableJsonTable.js"></script>
     
     <script id="tableAdmin">
         document.addEventListener('DOMContentLoaded', function () {
             const myTable = document.querySelector('#result-transacoes');
             const myTableMenu = document.querySelector('nav > section');
+            const myNav = document.querySelector('nav > .filtros');
             const cabecalho = {};
 
             let tabela;
@@ -559,19 +205,33 @@
             }
 
             function renderFilter() {
-                const 
+                //Tipo, rangeValor, DataInit e DataFim, Categoria
+                const select_tipo = tabela.composeSelectFilter('tipo.nome', 'Tipo', 'tipo.id');
+                const select_categoria = tabela.composeSelectFilter('categoria.nome', 'Categoria', 'categoria.id');
+
+                myNav.appendChild(select_tipo);
+                myNav.appendChild(select_categoria);
+
+                select_tipo.addEventListener('change', function() {
+                    tabela.setFilterOption('tipo.id',this.value);
+                    tabela.setFilteredTable();
+                    tabela.renderTable(myTable);
+                    syncAllTable();
+                })
+
+                select_categoria.addEventListener('change', function() {
+                    tabela.setFilterOption('categoria.id',this.value);
+                    tabela.setFilteredTable();
+                    tabela.renderTable(myTable);
+                    syncAllTable();
+                })
             }
-            
-            document.querySelector('#btn-click').addEventListener('click', function(e) {
-                e.preventDefault();
-                tabela.renderTable(myTable);
-                syncAllTable();
-            })
             
             function refreshTable(refresh_data = false) {
                 getFetchReponse(refresh_data).then(data => {
                     tabela = new FilterableJsonTable(data, cabecalho);
                     tabela.renderTable(myTable);
+                    renderFilter();
                     syncAllTable();
                 })
             }

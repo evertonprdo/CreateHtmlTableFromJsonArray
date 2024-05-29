@@ -164,10 +164,10 @@ section.main-content {
   width: 100%;
   margin-top: 10px;
 }
-section.main-content > aside, section.main-content nav {
+section.main-content > nav {
   width: 20%;
 }
-section.main-content > aside > section, section.main-content nav > section {
+section.main-content > nav > section {
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -175,5 +175,5 @@ section.main-content > aside > section, section.main-content nav > section {
   padding: 10px;
 }
 section.main-content > main {
-  width: 60%;
+  width: 80%;
 }/*# sourceMappingURL=style.css.map */
