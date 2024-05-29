@@ -168,6 +168,8 @@ section.main-content > aside, section.main-content nav {
   width: 20%;
 }
 section.main-content > aside > section, section.main-content nav > section {
+  display: flex;
+  flex-direction: column;
   position: sticky;
   top: 0;
   padding: 10px;

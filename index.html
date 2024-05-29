@@ -169,13 +169,15 @@
 
     <script id="JsonTable">
         class JsonTable {
+            #default_data;
+
             constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
                 this.data = data;
                 this.cabecalhos = cabecalhos;
                 this.tfoot = tfoot;
                 this.tfoot_ignore = tfoot_ignore;
 
-                this.default_data = data;
+                this.#default_data = data;
             }
 
             renderTable(HtmlTable) {
@@ -212,22 +214,17 @@
             composeBody(HtmlBody) {
                 HtmlBody.innerHTML = '';
                 this.data.forEach(element => {
-                    let row = this.composeBodyRow(element);
+                    let row = document.createElement('tr');
+                        Object.keys(this.cabecalhos).forEach(key => {
+                            let value = Helpers.getNestedPropety(element, key);
+                            let cell = document.createElement('td');
+                            
+                            value = Helpers.renderByTypeOf(value, true, 40);
+                            cell.innerText = value;
+                            row.appendChild(cell);
+                        })
                     HtmlBody.appendChild(row);
                 });
-            }
-
-            composeBodyRow(jrow) {
-                let row = document.createElement('tr');
-                Object.keys(this.cabecalhos).forEach(key => {
-                    let value = Helpers.getNestedPropety(jrow, key);
-                    let cell = document.createElement('td');
-                    
-                    value = Helpers.renderByTypeOf(value, true, 40);
-                    cell.innerText = value;
-                    row.appendChild(cell);
-                })
-                return row;
             }
 
             composeFooter(HtmlFoot, ignore) {
@@ -263,7 +260,7 @@
             }
 
             setDefaultData() {
-                this.data = this.default_data;
+                this.data = this.#default_data;
             }
 
             isColumnNumerable(column) {
@@ -280,17 +277,65 @@
             constructor(data, cabecalhos, tfoot = true, tfoot_ignore) {
                 super(data, cabecalhos, tfoot, tfoot_ignore);
                 this.filter_current_id = 0;
+                
+                this.options = {};
+                this.range_options = {};
             }
 
-            filterByPath(path, filter) {
+            setFilterOption(key, value) {
+                this.options[key] = value;
+            }
+
+            setFilterRange(key, min, max) {
+                this.range_options[key] = {'min': min, 'max': max};
+            }
+
+            removeFilterOption(key) {
+                delete this.options[key];
+                delete this.range_options[key];
+            }
+
+            resetFilterOptions() {
+                this.options = {};
+            }
+
+            setFilteredTable() {
+                const columns = Object.keys(this.options);
+                const range_columns = Object.keys(this.range_options);
+                const compare = columns.length + range_columns.length;
                 const values = [];
 
                 this.data.forEach(item => {
-                    if (Helpers.getNestedPropety(item, path) == filter) {
+                    let count_true = 0;
+                    columns.forEach(key => {
+                        let valor = Helpers.getNestedPropety(item, key);
+                        if (this.options[key] == valor) {
+                            count_true++;
+                        }
+                    })
+                    range_columns.forEach(key => {
+                        const min = this.range_options[key].min;
+                        const max = this.range_options[key].max;
+                        
+                        let valor = Helpers.getNestedPropety(item, key);
+                        
+                        if (Helpers.isNumerable(valor)) {
+                            let number = parseFloat(valor);
+                            if (number >= min && number <= max) {
+                                count_true++;
+                            }
+                        } else if(Helpers.isDateable(valor)) {
+                            let date = new Date(valor).getTime();
+                            if (date >= min && date <= max) {
+                                count_true++;
+                            }
+                        }
+                    })
+                    if (compare === count_true) {
                         values.push(item);
                     }
                 })
-                return values;
+                this.data = values;
             }
 
             orderByPath(path, ord = false) {
@@ -318,11 +363,16 @@
                 return ord_data;
             }
 
-            composeSelectFilter(cabecalho, label) {
+            composeSelectFilter(cabecalho, label, value_path) {
                 const select = document.createElement('select');
                 const options_array = [];
+                const option = document.createElement('option');
 
+                option.innerText = 'All '+ label;
+                option.value = 0;
+                
                 select.id = Helpers.stringToSlug(label) + this.filter_current_id;
+                select.appendChild(option);
 
                 this.data.forEach(item => {
                     let value = Helpers.getNestedPropety(item, cabecalho);
@@ -333,7 +383,10 @@
                         options_array.push(value);
                         const option = document.createElement('option');
 
-                        option.value = Helpers.stringToSlug(value.toLowerCase());
+                        option.value = value_path ?
+                            Helpers.getNestedPropety(item, value_path) : 
+                            Helpers.stringToSlug(value.toLowerCase())
+                        ;
                         option.innerText = value;
                         select.appendChild(option);
                     }
@@ -385,18 +438,6 @@
                     label.className = classe;
                 }
                 return label;
-            }
-
-            isIndexable(column) {
-
-            }
-
-            screateFilterElement(type = null) {
-
-            }
-
-            static isNumerable(column, data) {
-
             }
         }
     </script>
@@ -518,14 +559,13 @@
             }
 
             function renderFilter() {
-                //const filtro = tabela.composeDefaultFilter('number', 'Label de Teste');
-                const mySelect = tabela.composeSelectFilter('categoria.nome', 'Descrição');
-                myTableMenu.appendChild(mySelect);
+                const 
             }
             
             document.querySelector('#btn-click').addEventListener('click', function(e) {
                 e.preventDefault();
-                renderFilter();
+                tabela.renderTable(myTable);
+                syncAllTable();
             })
             
             function refreshTable(refresh_data = false) {
