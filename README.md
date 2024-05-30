@@ -1,7 +1,17 @@
-Criador de tabela em js recebendo um arquivo json e definindo cabeçalho por path. 
+# Create Table By Json
 
-Exemplo de uso: 
-  tabela = new JsonTable(json, ["tipo.nome", "categoria.nome", "valor"]);
-  renderTable(myHtmlTable);
+Este repositório se propoe em essencia: Receber um arquivo com estrutura de dados json e apartir de algumas configurações criar uma tabela em html com os dados recebidos.
 
-Atualmente a tabela tem que ser pre definida na página com thead, tbody e tfoot.
+## Doc de Desenvolvimento
+
+### Funcionalidades
+
+- [ ] Gerar ou capturar tabela html
+- [ ] Recursos para tratar os dados, por exemplo: Receber uma string em foramto UTC e converter para Date
+- [ ] Definir os cabeçalhos apartir das chaves e caminhos de chaves do Json, exemplo: categoria.nome, carro.motor.nome
+
+### Funcionalidades de Filtragem
+
+- [ ] Gerar filtros Html
+- [ ] Filtrar a tabela a partir dos filtros
+- [ ] Gerar os filtros dinamicamente com os dados da tabela
