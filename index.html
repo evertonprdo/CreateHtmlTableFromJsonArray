@@ -19,7 +19,7 @@
 
             currentPromise = new Promise(async (resolve, reject) => {
                 try {
-                    let reponse = await fetch('server.php', { signal });
+                    let reponse = await fetch('transacoes.json', { signal });
                     let data = await reponse.json();
                     resolve(data);
                 } catch (error) {
@@ -48,7 +48,7 @@
                 }
             }
         }
-        getFetchReponse();
+       getFetchReponse().then((response) => {console.log("response")})
     </script>
 </head>
 <body>
@@ -110,7 +110,6 @@
         
         function syncAnimatedTable() {
             const trs = document.querySelectorAll('tbody tr');
-
             trs.forEach(function(tr) {
                 const originalHeight = tr.clientHeight;
                 const expandedHeight = originalHeight * 1.5; // Altura final ao expandir
@@ -157,86 +156,6 @@
                 }
             });
         };
-    </script>
-
-    <script src="src/Helpers.js"></script>
-    <script src="src/JsonTable.js"></script>
-    <script src="src/FilterableJsonTable.js"></script>
-    
-    <script id="tableAdmin">
-        document.addEventListener('DOMContentLoaded', function () {
-            const myTable = document.querySelector('#result-transacoes');
-            const myTableMenu = document.querySelector('nav > section');
-            const myNav = document.querySelector('nav > .filtros');
-            const cabecalho = {};
-
-            let tabela;
-            let ordAtual = null;
-            let ord = true;
-
-            myTable.querySelectorAll('thead th').forEach(item => {
-                cabecalho[item.dataset.columnref] = item.innerText;
-            });
-
-            function syncAllTable() {
-                syncAnimatedTable();
-                syncThClick();
-            }
-
-            function syncThClick() {
-                const html_ths = myTable.querySelectorAll('thead th');
-                
-                html_ths.forEach(th => {
-                    th.addEventListener('click', function() {
-                        
-                        const coluna = this.dataset.columnref;
-                        
-                        if (ordAtual === coluna) {
-                            ord = !ord;
-                        } else {
-                            ordAtual = coluna;
-                            ord = true;
-                        }
-                        tabela.orderByPath(coluna, ord);
-                        tabela.renderTable(myTable);
-                        syncAllTable();
-                    })
-                })
-            }
-
-            function renderFilter() {
-                //Tipo, rangeValor, DataInit e DataFim, Categoria
-                const select_tipo = tabela.composeSelectFilter('tipo.nome', 'Tipo', 'tipo.id');
-                const select_categoria = tabela.composeSelectFilter('categoria.nome', 'Categoria', 'categoria.id');
-
-                myNav.appendChild(select_tipo);
-                myNav.appendChild(select_categoria);
-
-                select_tipo.addEventListener('change', function() {
-                    tabela.setFilterOption('tipo.id',this.value);
-                    tabela.setFilteredTable();
-                    tabela.renderTable(myTable);
-                    syncAllTable();
-                })
-
-                select_categoria.addEventListener('change', function() {
-                    tabela.setFilterOption('categoria.id',this.value);
-                    tabela.setFilteredTable();
-                    tabela.renderTable(myTable);
-                    syncAllTable();
-                })
-            }
-            
-            function refreshTable(refresh_data = false) {
-                getFetchReponse(refresh_data).then(data => {
-                    tabela = new FilterableJsonTable(data, cabecalho);
-                    tabela.renderTable(myTable);
-                    renderFilter();
-                    syncAllTable();
-                })
-            }
-            refreshTable();
-        })
     </script>
 </body>
 </html>
