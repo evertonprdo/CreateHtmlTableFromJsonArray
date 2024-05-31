@@ -48,7 +48,7 @@
                 }
             }
         }
-       getFetchReponse().then((response) => {console.log(response)})
+       getFetchReponse().then((response) => {console.log("response")})
     </script>
 </head>
 <body>
@@ -110,7 +110,6 @@
         
         function syncAnimatedTable() {
             const trs = document.querySelectorAll('tbody tr');
-
             trs.forEach(function(tr) {
                 const originalHeight = tr.clientHeight;
                 const expandedHeight = originalHeight * 1.5; // Altura final ao expandir
