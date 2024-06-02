@@ -35,3 +35,32 @@ function multiplyAll(values, factor) {
         return values.map((x) => x * factor);
     }
 }
+console.log(multiplyAll([25, 30, 10], 3));
+function move(animal) {
+    if ("swim" in animal) {
+        animal;
+    }
+    else {
+        animal;
+    }
+}
+function logValue(x) {
+    if (x instanceof Date) {
+        console.log(x.toUTCString());
+    }
+    else {
+        console.log(x.toUpperCase());
+    }
+}
+logValue(new Date);
+function isFish(pet) {
+    return pet.swim !== undefined;
+}
+function getSmallPet() {
+    let x = { fly() { console.log("Voando"); } };
+    let y = { swim() { console.log("Nadando"); } };
+    return Math.random() > 0.5 ? x : y;
+}
+const zoo = [getSmallPet(), getSmallPet(), getSmallPet(), getSmallPet(), getSmallPet()];
+const undeWater1 = zoo.filter(isFish);
+console.log(undeWater1);

@@ -84,3 +84,41 @@ function multiplyAll(
       return values.map((x) => x * factor);
     }
   }
+console.log(multiplyAll([25, 30, 10], 3));
+
+type Fish = { swim: () => void };
+type Bird = { fly: () => void };
+type Human = { swim?: () => void; fly?: () => void };
+ 
+function move(animal: Fish | Bird | Human) {
+  if ("swim" in animal) {
+    animal;
+  } else {
+    animal;
+  }
+}
+
+function logValue(x: Date | string):void {
+    if (x instanceof Date) {
+        console.log(x.toUTCString());
+    } else {
+        console.log(x.toUpperCase());      
+    }
+}
+
+logValue(new Date);
+
+function isFish(pet: Fish | Bird): pet is Fish {
+    return (pet as Fish).swim !== undefined;
+}
+
+function getSmallPet(): Fish | Bird {
+    let x:Bird = { fly() {console.log("Voando");} }
+    let y:Fish = { swim() {console.log("Nadando");} }
+    return Math.random() > 0.5 ? x : y;
+}
+
+const zoo: (Fish | Bird)[] = [getSmallPet(), getSmallPet(), getSmallPet(), getSmallPet(), getSmallPet()];
+const undeWater1: Fish[] = zoo.filter(isFish) as Fish[];
+
+console.log(undeWater1);
