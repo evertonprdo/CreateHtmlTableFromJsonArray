@@ -5,15 +5,15 @@
 
 @mixin build() {
     table {
-        @include layout.table();
+        //@include layout.table();
         @include skin.table();
         @include high.table();
         thead {
-            @include layout.thead();
+            //@include layout.thead();
             @include skin.thead();
             @include high.thead();
             tr {
-                @include layout.tr();
+                //@include layout.tr();
                 @include skin.tr($thead: true);
                 @include high.tr($thead: true);
                 th{
@@ -27,11 +27,11 @@
             }
         }
         tbody {
-            @include layout.tbody();
+            //@include layout.tbody();
             @include skin.tbody();
             @include high.tbody();
             tr {
-                @include layout.tr($tbody: true);
+                //@include layout.tr($tbody: true);
                 @include skin.tr($tbody: true);
                 @include high.tr($tbody: true);
                 td{
@@ -45,11 +45,11 @@
             }
         }
         tfoot {
-            @include layout.tfoot();
+            //@include layout.tfoot();
             @include skin.tfoot();
             @include high.tfoot();
             tr {
-                @include layout.tr();
+                //@include layout.tr();
                 @include skin.tr($tfoot: true);
                 @include high.tr($tfoot: true);
                 td{

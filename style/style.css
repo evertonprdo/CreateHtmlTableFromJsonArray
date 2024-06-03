@@ -3,21 +3,11 @@
 
 // ----- Inicio do Escopo Principal ----- */
 table {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   background-color: #47d1bf;
   border-radius: 7px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
 }
-table thead {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
 table thead tr {
-  display: flex;
-  justify-content: space-between;
   background-color: #47d1bf;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
   border-radius: 7px 7px 0 0;
@@ -26,10 +16,18 @@ table thead tr th {
   padding: 7px;
   padding: 10px;
   font-weight: bold;
-  font-size: 20px;
   min-height: 30px;
   cursor: pointer;
-  width: 15%;
+  /*
+      width: 15%;
+
+      &:nth-child(1) {
+          width: 5%;
+      }
+      &:nth-child(2) {
+          width: 50%;
+      }
+  */
 }
 table thead tr th:first-child {
   border-radius: 7px 0 0 0;
@@ -39,12 +37,6 @@ table thead tr th:last-child {
 }
 table thead tr th:hover, table thead tr th:focus {
   background-color: #64e7d6;
-}
-table thead tr th:nth-child(1) {
-  width: 5%;
-}
-table thead tr th:nth-child(2) {
-  width: 50%;
 }
 table thead tr th:nth-child(1) {
   text-align: center;
@@ -62,16 +54,9 @@ table thead tr th:nth-child(5) {
   text-align: center;
 }
 table tbody {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   background-color: #f6f9f8;
 }
 table tbody tr {
-  display: flex;
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
   transition: background-color 0.35s ease, font-size 0.35s ease;
 }
 table tbody tr:not(:last-child) {
@@ -85,13 +70,16 @@ table tbody tr:hover {
 }
 table tbody tr td {
   padding: 7px;
-  width: 15%;
-}
-table tbody tr td:nth-child(1) {
-  width: 5%;
-}
-table tbody tr td:nth-child(2) {
-  width: 50%;
+  /*
+      width: 15%;
+
+      &:nth-child(1) {
+          width: 5%;
+      }
+      &:nth-child(2) {
+          width: 50%;
+      }
+  */
 }
 table tbody tr td:nth-child(1) {
   text-align: center;
@@ -108,17 +96,21 @@ table tbody tr td:nth-child(4) {
 table tbody tr td:nth-child(5) {
   text-align: center;
 }
-table tfoot tr {
-  display: flex;
-  justify-content: space-between;
-}
 table tfoot tr td {
   padding: 7px;
   padding: 10px;
   font-weight: bold;
-  font-size: 20px;
   min-height: 30px;
-  width: 15%;
+  /*
+      width: 15%;
+
+      &:nth-child(1) {
+          width: 5%;
+      }
+      &:nth-child(2) {
+          width: 50%;
+      }
+  */
 }
 table tfoot tr td:first-child {
   border-radius: 7px 0 0 0;
@@ -131,12 +123,6 @@ table tfoot tr td:first-child {
 }
 table tfoot tr td:last-child {
   border-radius: 0 0 7px 0;
-}
-table tfoot tr td:nth-child(1) {
-  width: 5%;
-}
-table tfoot tr td:nth-child(2) {
-  width: 50%;
 }
 table tfoot tr td:nth-child(1) {
   text-align: center;

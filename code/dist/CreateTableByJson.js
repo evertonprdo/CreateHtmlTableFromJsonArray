@@ -1,24 +1,64 @@
 "use strict";
-;
-;
+class Helpers {
+    static getNestedProperty(obj, path) {
+        const keys = path.split('.');
+        return keys.reduce((prev, curr) => {
+            return prev && prev[curr] !== undefined ? prev[curr] : undefined;
+        }, obj);
+    }
+    static getAllPaths(obj, prefix = '') {
+        let paths = {};
+        for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                const newKey = prefix ? `${prefix}.${key}` : key;
+                if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                    Object.assign(paths, this.getAllPaths(obj[key], newKey));
+                }
+                else {
+                    paths[newKey] = newKey;
+                }
+            }
+        }
+        return paths;
+    }
+}
+const data_c1 = [];
+for (let i = 0; i < 100; i++) {
+    data_c1.push({
+        data: "key " + i,
+        item: i,
+        teste: {
+            kest: i % 2 === 0 ? 'Teste ' + i : '',
+            id: i % 3 === 0 ? 75 + i : '',
+            teste: {
+                teste: '°-° teste / ' + i * 3
+            }
+        },
+        date: new Date().toLocaleDateString(),
+        oste: i * 2,
+        oeste: {
+            tot: i * 100,
+            long: {
+                min: i + (i + 35),
+                max: i - (i + 35)
+            },
+            short: {
+                min: "Tecnicamente: " + i % 3,
+                max: 'loste ' + (i / 3).toFixed(2)
+            }
+        }
+    });
+}
 class CreateTableByJson {
     table;
     data;
     headers;
     html_options;
-    fns;
     constructor(data, headers, table) {
-        this.table = table ? table : this.createTable();
         this.data = data;
         this.headers = headers;
         this.html_options = {};
-        this.fns = {};
-    }
-    playFn(key, prop) {
-        return this.fns[key](prop ?? null);
-    }
-    addFunction(key, fn) {
-        this.fns[key] = fn;
+        this.table = table ? table : this.createTable();
     }
     HtmlOptionSet(opt) {
         if (opt) {
@@ -50,29 +90,35 @@ class CreateTableByJson {
         cell.innerText = inner_text;
         return cell;
     }
-    createRow(str) {
+    createRow(str, item, thead = false) {
         const tr = document.createElement('tr');
-        for (let i = 1; i < 8; i++) {
-            const td = this.createCell(str, 'Iteração: ' + i);
-            tr.appendChild(td);
+        for (const key in this.headers) {
+            if (thead) {
+                const cell = this.createCell(str, `${this.headers[key]}`);
+                tr.appendChild(cell);
+            }
+            else {
+                const cell = this.createCell(str, `${Helpers.getNestedProperty(item, key)}`);
+                tr.appendChild(cell);
+            }
         }
         return tr;
     }
     createThead() {
         const thead = document.createElement('thead');
-        thead.appendChild(this.createRow('th'));
+        thead.appendChild(this.createRow('th', this.headers, true));
         return thead;
     }
     createTbody() {
         const tbody = document.createElement('tbody');
-        for (let i = 0; i < 20; i++) {
-            tbody.appendChild(this.createRow('td'));
+        for (let i = 0; i < this.data.length; i++) {
+            tbody.appendChild(this.createRow('td', this.data[i]));
         }
         return tbody;
     }
     createTfoot() {
         const tfoot = document.createElement('tfoot');
-        tfoot.appendChild(this.createRow('th'));
+        tfoot.appendChild(this.createRow('td', this.headers, true));
         return tfoot;
     }
     createTable() {
@@ -83,31 +129,6 @@ class CreateTableByJson {
         return table;
     }
 }
-const data_c1 = { data: "key", item: 25, teste: { kest: "Teste", id: 75 }, date: "2024-11-05" };
-const headers_c1 = { 'data': 'Teste', 'item.kest': 'Testando Aninhado', 'date': 'Data da Compra' };
+const headers_c1 = Helpers.getAllPaths(data_c1[0]);
 const c1 = new CreateTableByJson(data_c1, headers_c1);
 document.body.appendChild(c1.table);
-c1.setHtmlAtribute(c1.table, { 'data-columref': 'Teste', 'class': 'Classe-Teste' });
-c1.HtmlOptionSet({ 'Header.test': 'Oloi', 'Sabato': 'Teste', 'Teste.teste': 'De Teste que testa os teste' });
-c1.HtmlOptionDelete([]);
-function nomeada() {
-    console.log("nomeada");
-}
-function teste2() {
-    console.log("teste2");
-}
-function norm() {
-    let c = c1.createCell("td", 'Sera que esse tipo de coisa é realmente util? Provavel, mas talvez não desse jeito');
-    return c;
-}
-function fnAtribuicao(c) {
-    const tr = c.createRow('td');
-    tr.style.color = 'red';
-    console.log(tr);
-}
-c1.addFunction('chave', nomeada);
-c1.addFunction('teste2', teste2);
-c1.addFunction('norm', norm);
-c1.addFunction('teste', fnAtribuicao);
-let c = c1.playFn('teste', (c1));
-console.log(c);
