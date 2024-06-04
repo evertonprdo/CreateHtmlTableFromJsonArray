@@ -1,12 +1,11 @@
 export class DataObject {
     records;
-    default_data;
+    default_records;
     constructor(records) {
         this.records = records;
-        this.default_data = records;
+        this.default_records = records;
     }
-    static doAllColumnsMatch(data, reff) {
-    }
-    static makeMyOwnDomTableDataObject() {
+    get def_data() {
+        return this.default_records;
     }
 }

@@ -39,7 +39,7 @@ async function getLocalData() {
     });
 }
 const data_c2 = await getLocalData();
-const headers_c1 = Helpers.getAllPaths(data_c1.records[0]);
+const headers_c1 = Helpers.getAllPaths(array_c1[0]);
 const headers_c2 = {
     'tipo.nome': 'Tipo',
     'descr': 'Descrição',
@@ -53,3 +53,4 @@ const option = {
 };
 const c1 = new CreateTableByJson(data_c1, headers_c1);
 document.body.appendChild(c1.table);
+console.log(Helpers.makeMyOwnDomTableDataObject('table'));

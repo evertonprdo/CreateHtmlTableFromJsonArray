@@ -47,7 +47,7 @@ async function getLocalData(): Promise<DataObjectType> {
 
 const data_c2 = await getLocalData();
 
-const headers_c1: OptionType = Helpers.getAllPaths(data_c1.records[0]);
+const headers_c1: OptionType = Helpers.getAllPaths(array_c1[0]);
 const headers_c2: OptionType = {
     'tipo.nome': 'Tipo', 
     'descr': 'Descrição', 
@@ -62,5 +62,6 @@ const option: DataItemType = {
 }
 
 const c1: CreateTableByJson = new CreateTableByJson(data_c1, headers_c1);
-
 document.body.appendChild(c1.table);
+
+console.log(Helpers.makeMyOwnDomTableDataObject('table'));
