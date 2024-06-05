@@ -5,7 +5,7 @@ export class DataObject {
         this.records = records;
         this.default_records = records;
     }
-    get def_data() {
+    get defaultData() {
         return this.default_records;
     }
 }

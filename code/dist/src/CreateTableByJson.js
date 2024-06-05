@@ -1,4 +1,4 @@
-import { Helpers } from "../tools/Helpers.js";
+import { Utils as Utl } from "../utils/Utils.js";
 import { DataObject } from "./DataObject.js";
 export class CreateTableByJson {
     table;
@@ -28,11 +28,6 @@ export class CreateTableByJson {
             });
         }
     }
-    setHtmlAtribute(html, opts) {
-        for (const key in opts) {
-            html.setAttribute(key, opts[key]);
-        }
-    }
     createCell(type, inner_text, option) {
         const cell = document.createElement(type);
         if (option) {
@@ -49,7 +44,7 @@ export class CreateTableByJson {
                 tr.appendChild(cell);
             }
             else {
-                const cell = this.createCell(str, `${Helpers.getNestedProperty(item, key)}`);
+                const cell = this.createCell(str, `${Utl.Data.getNestedProperty(item, key)}`);
                 tr.appendChild(cell);
             }
         }
@@ -80,3 +75,66 @@ export class CreateTableByJson {
         return table;
     }
 }
+var TableByJson;
+(function (TableByJson) {
+    class Table {
+        table;
+        thead;
+        tbody;
+        tfoot;
+        atr_opt;
+    }
+    class TSection {
+        html_table_section;
+        atr_opt;
+        tr;
+    }
+    class Thead extends TSection {
+    }
+    class Tbody extends TSection {
+    }
+    class Tfoot extends TSection {
+    }
+    class Tr {
+        cells;
+    }
+    class Cell {
+    }
+})(TableByJson || (TableByJson = {}));
+export var Option;
+(function (Option) {
+    class HtmlAttribute {
+        element;
+        option;
+        constructor(target, option) {
+            this.element = target;
+            this.option = option;
+        }
+        assignToHtml(key) {
+            this.element.setAttribute(key, this.option[key]);
+        }
+        removeFromHtml(key) {
+            this.element.removeAttribute(key);
+        }
+        setOption(key, value) {
+            this.option[key] = value;
+            this.assignToHtml(key);
+        }
+        removeOption(key) {
+            delete this.option[key];
+            this.removeFromHtml(key);
+        }
+        clearOptions() {
+            Object.keys(this.option).forEach(key => {
+                this.removeOption(key);
+            });
+        }
+        get target() {
+            return this.element;
+        }
+        get options() {
+            return this.option;
+        }
+    }
+    Option.HtmlAttribute = HtmlAttribute;
+})(Option || (Option = {}));

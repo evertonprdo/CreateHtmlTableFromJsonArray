@@ -1,6 +1,6 @@
-import { Helpers } from "./tools/Helpers.js";
+import { Utils as Utl } from "./utils/Utils.js";
 import { DataObject } from "./src/DataObject.js";
-import { CreateTableByJson } from "./src/CreateTableByJson.js";
+import { CreateTableByJson, Option } from "./src/CreateTableByJson.js";
 const array_c1 = [];
 for (let i = 0; i < 100; i++) {
     array_c1.push({
@@ -28,7 +28,6 @@ for (let i = 0; i < 100; i++) {
         }
     });
 }
-array_c1.push({ 'oste': 'MatchTeste', 'prop': 'teste de incoerencia das colunas', 'vertice': 'blue', 'v': { 'max': 'armarelo' } });
 const data_c1 = new DataObject(array_c1);
 async function getLocalData() {
     return fetch('transacoes.json')
@@ -39,7 +38,7 @@ async function getLocalData() {
     });
 }
 const data_c2 = await getLocalData();
-const headers_c1 = Helpers.getAllPaths(array_c1[0]);
+const headers_c1 = Utl.Data.getAllPaths(data_c2[0]);
 const headers_c2 = {
     'tipo.nome': 'Tipo',
     'descr': 'Descrição',
@@ -51,6 +50,16 @@ const option = {
     max_lenght: 25,
     currency_columns: ['valor']
 };
-const c1 = new CreateTableByJson(data_c1, headers_c1);
-document.body.appendChild(c1.table);
-console.log(Helpers.makeMyOwnDomTableDataObject('table'));
+const c1 = new CreateTableByJson(data_c2, headers_c2);
+const html_teste_opt = document.createElement('input');
+const d1 = document.getElementById('fragmento');
+const d_move = document.getElementById('frag-move');
+const atr_opt = new Option.HtmlAttribute(html_teste_opt, {});
+let fragment = document.createDocumentFragment();
+atr_opt.setOption('class', 'teste');
+fragment.appendChild(html_teste_opt);
+atr_opt.setOption('style', 'color: blue');
+atr_opt.setOption('value', 'teste');
+atr_opt.setOption('data-teste', 'teste');
+console.log(fragment);
+d_move?.appendChild(fragment);

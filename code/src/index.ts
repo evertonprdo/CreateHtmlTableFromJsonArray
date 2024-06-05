@@ -1,10 +1,10 @@
-import { Helpers } from "./tools/Helpers.js";
+import { Type } from "./utils/Types.js";
+import { Utils as Utl } from "./utils/Utils.js";
+
 import { DataObject } from "./src/DataObject.js";
-import { CreateTableByJson } from "./src/CreateTableByJson.js";
-import { OptionType, DataObjectType, DataItemType } from "./tools/types.js";
+import { CreateTableByJson, Option } from "./src/CreateTableByJson.js";
 
-const array_c1: DataObjectType = [];
-
+const array_c1: Type.DataObject = [];
 for (let i = 0; i < 100; i++) {
     array_c1.push({ 
         data: "key "+ i, 
@@ -31,12 +31,9 @@ for (let i = 0; i < 100; i++) {
         }
     });
 }
-
-array_c1.push({'oste': 'MatchTeste' ,'prop': 'teste de incoerencia das colunas', 'vertice': 'blue', 'v': {'max': 'armarelo'}})
-
 const data_c1: DataObject = new DataObject(array_c1);
 
-async function getLocalData(): Promise<DataObjectType> {
+async function getLocalData(): Promise<Type.DataObject> {
     return fetch('transacoes.json')
     .then(response => {
         return response.json();
@@ -44,11 +41,10 @@ async function getLocalData(): Promise<DataObjectType> {
         return data;
     })
 }
-
 const data_c2 = await getLocalData();
 
-const headers_c1: OptionType = Helpers.getAllPaths(array_c1[0]);
-const headers_c2: OptionType = {
+const headers_c1: Type.Option = Utl.Data.getAllPaths(data_c2[0]);
+const headers_c2: Type.Option = {
     'tipo.nome': 'Tipo', 
     'descr': 'Descrição', 
     'valor': 'Valor', 
@@ -56,12 +52,30 @@ const headers_c2: OptionType = {
     'categoria.nome': 'Categoria'
 };
 
-const option: DataItemType = {
+const option: Type.DataItem = {
     max_lenght: 25,
     currency_columns: ['valor']
 }
 
-const c1: CreateTableByJson = new CreateTableByJson(data_c1, headers_c1);
-document.body.appendChild(c1.table);
+const c1: CreateTableByJson = new CreateTableByJson(data_c2, headers_c2);
+//document.body.appendChild(c1.table);
 
-console.log(Helpers.makeMyOwnDomTableDataObject('table'));
+const html_teste_opt = document.createElement('input')
+const d1 = document.getElementById('fragmento');
+const d_move = document.getElementById('frag-move');
+const atr_opt = new Option.HtmlAttribute(html_teste_opt, {});
+
+let fragment = document.createDocumentFragment();
+
+atr_opt.setOption('class', 'teste')
+fragment.appendChild(html_teste_opt);
+
+atr_opt.setOption('style', 'color: blue')
+atr_opt.setOption('value', 'teste')
+atr_opt.setOption('data-teste', 'teste')
+
+//d1?.appendChild(html_teste_opt)
+console.log(fragment);
+
+d_move?.appendChild(fragment);
+

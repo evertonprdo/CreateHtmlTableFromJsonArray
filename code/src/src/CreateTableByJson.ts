@@ -1,21 +1,22 @@
-import { Helpers } from "../tools/Helpers.js";
+import { Type } from "../utils/Types.js";
+import { Utils as Utl } from "../utils/Utils.js";
+
 import { DataObject } from "./DataObject.js";
-import { OptionType, DataObjectType } from "../tools/types.js";
 
 export class CreateTableByJson {
     table: HTMLTableElement;
     data: DataObject;
-    headers: OptionType;
-    html_options: OptionType;
+    headers: Type.Option;
+    html_options: Type.Option;
     
-    constructor(data: DataObject | DataObjectType, headers: OptionType, table?: HTMLTableElement) {
+    constructor(data: DataObject | Type.DataObject, headers: Type.Option, table?: HTMLTableElement) {
         this.data = data instanceof DataObject ? data : new DataObject(data);
         this.headers = headers;
-        this.html_options = {} as OptionType;
+        this.html_options = {} as Type.Option;
         this.table = table ? table : this.createTable();
     }
 
-    HtmlOptionSet(opt: OptionType): void {
+    HtmlOptionSet(opt: Type.Option): void {
         if(opt) {
             for (const key in opt) {
                 this.html_options[key] = opt[key];
@@ -33,12 +34,6 @@ export class CreateTableByJson {
         }
     }
 
-    setHtmlAtribute(html: HTMLElement, opts: OptionType): void {
-        for (const key in opts) {
-            html.setAttribute(key, opts[key] as string)
-        }
-    }
-
     createCell(type: "th" | "td", inner_text: string, option?: (cell: HTMLTableCellElement) => void): HTMLTableCellElement {
         const cell = document.createElement(type);
         if (option) {
@@ -48,14 +43,14 @@ export class CreateTableByJson {
         return cell;
     }
 
-    createRow(str: "th" | "td", item: OptionType, thead:boolean = false): HTMLTableRowElement {
+    createRow(str: "th" | "td", item: Type.Option, thead:boolean = false): HTMLTableRowElement {
         const tr = document.createElement('tr');
         for (const key in this.headers) {
             if (thead) {
                 const cell = this.createCell(str, `${this.headers[key]}`);
                 tr.appendChild(cell);
             } else {
-                const cell = this.createCell(str, `${Helpers.getNestedProperty(item, key)}`);
+                const cell = this.createCell(str, `${Utl.Data.getNestedProperty(item, key)}`);
                 tr.appendChild(cell);
             }
         }
@@ -88,5 +83,88 @@ export class CreateTableByJson {
         table.appendChild(this.createTbody());
         table.appendChild(this.createTfoot());
         return table;
+    }
+}
+
+namespace TableByJson {
+    class Table {
+        table: Table
+        thead: Thead
+        tbody: Tbody
+        tfoot: Tfoot
+        atr_opt: Option.HtmlAttribute
+    }
+
+    abstract class TSection {
+        html_table_section: HTMLTableSectionElement;
+        atr_opt: Option.HtmlAttribute[];
+        tr: HtmlTr[]
+    }
+
+    class Thead extends TSection {
+
+        
+    }
+
+    class Tbody extends TSection {
+
+
+    }
+
+    class Tfoot extends TSection {
+
+
+    }
+
+    class Tr {
+        cells: HtmlCell[]
+    }
+
+    class Cell {
+
+    }
+}
+
+export namespace Option {
+    export class HtmlAttribute {
+        private readonly element: HTMLElement
+        private option: Type.Option
+
+        constructor(target: HTMLElement, option: Type.Option) {
+            this.element = target;
+            this.option = option
+        }
+
+        private assignToHtml(key: string): void {
+            this.element.setAttribute(key, this.option[key])
+        }
+
+        private removeFromHtml(key: string): void {
+            this.element.removeAttribute(key)
+        }
+
+        public setOption(key: string, value: string): void {
+            this.option[key] = value;
+            this.assignToHtml(key);
+        }
+
+        public removeOption(key: string) : void {
+            delete this.option[key];
+            this.removeFromHtml(key);
+        }
+
+        public clearOptions(): void {
+            Object.keys(this.option).forEach(key => {
+                this.removeOption(key);
+            });
+        }
+
+        get target() {
+            return this.element;
+        }
+
+        get options() {
+            return this.option
+        }
     }
 }

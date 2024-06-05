@@ -1,15 +1,15 @@
-import { Helpers } from "../tools/Helpers.js";
-import { DataObjectType, DataItemType } from "../tools/types.js";
+import { Type } from "../utils/Types.js";
+import { Utils as Utl } from "../utils/Utils.js";
 
 export class DataObject {
-    public records: DataObjectType;
-    private readonly default_records: DataObjectType;
-    constructor(records: DataObjectType) {
+    public records: Type.DataObject;
+    private readonly default_records: Type.DataObject;
+    constructor(records: Type.DataObject) {
         this.records = records;
         this.default_records = records;
     }
 
-    get def_data() {
+    get defaultData() {
         return this.default_records;
     }
 }

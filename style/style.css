@@ -142,24 +142,34 @@ table tfoot tr td:nth-child(5) {
 
 body {
   max-width: 1920px;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   margin: auto;
 }
 
+/*
 section.main-content {
-  display: flex;
-  width: 100%;
-  margin-top: 10px;
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+
+    & > nav {
+        & > section {
+            display: flex;
+            flex-direction: column;
+
+            position: sticky;
+            top: 0;
+
+            padding: 10px;
+        }
+        width: 20%;
+    }
+
+    & > main {
+        width: 80%;
+    }
 }
-section.main-content > nav {
-  width: 20%;
-}
-section.main-content > nav > section {
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 0;
-  padding: 10px;
-}
-section.main-content > main {
-  width: 80%;
-}/*# sourceMappingURL=style.css.map */
+*//*# sourceMappingURL=style.css.map */

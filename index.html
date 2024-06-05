@@ -7,56 +7,21 @@
     
     <link rel="stylesheet" href="style/style.css">
     
-    <!-- Teste  
-    <script>
-        let controller = null;
-        let currentPromise = null;
-        
-        function requestServer() {
-            if (controller) {
-                controller.abort();
-            }
-
-            controller = new AbortController();
-            const signal = controller.signal;
-
-            currentPromise = new Promise(async (resolve, reject) => {
-                try {
-                    let reponse = await fetch('server.php', { signal });
-                    let data = await reponse.json();
-                    resolve(data);
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        console.log('Requisição abortada');
-                    } else {
-                        reject(error);
-                    }
-                } finally {
-                    controller = null;
-                }
-            });
-
-            return currentPromise;
-        }
-
-        function getFetchReponse(refresh = false) {
-            if (refresh) {
-                currentPromise = null;
-                return requestServer();
-            } else {
-                if(currentPromise) {
-                    return currentPromise;
-                } else {
-                    return requestServer();
-                }
-            }
-        }
-        getFetchReponse();
-    </script>
-    -->
     <style>
         * {
             font-family: monospace;
+        }
+        #fragmento {
+            margin: 10px;
+            background-color: beige;
+            width: 750px;
+            height: 300px;
+        }
+        #frag-move {
+            margin: 10px;
+            background-color: bisque;
+            width: 750px;
+            height: 300px;
         }
     </style>
     <!--
@@ -72,190 +37,10 @@
     -->
 </head>
 <body>
+    <div id="fragmento">
+        <button>Teste de Fragment</button>
+    </div>
+    <div id="frag-move"></div>
     <script type="module" src="code/dist/index.js"></script>
-    <!--
-    <section class="main-content">
-        <nav>
-            <section class="filtros" id="filtros">
-            </section>
-        </nav>
-        <main>
-            <table id="result-transacoes">
-                <thead>
-                    <tr>
-                        <th data-columnref="tipo.nome">Tipo</th>
-                        <th data-columnref="descr">Descrição</th>
-                        <th data-columnref="valor">Valor</th>
-                        <th data-columnref="date">Data</th>
-                        <th data-columnref="categoria.nome">Categoria</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>IN</td>
-                        <td>Descrição Genérica para estilo</td>
-                        <td>R$ 78,90</td>
-                        <td>24/02/2024</td>
-                        <td>Exemplo</td>
-                    </tr>
-                    <tr>
-                        <td>IN</td>
-                        <td>Descrição Genérica para estilo</td>
-                        <td>R$ 78,90</td>
-                        <td>24/02/2024</td>
-                        <td>Exemplo</td>
-                    </tr>
-                    <tr>
-                        <td>IN</td>
-                        <td>Descrição Genérica para estilo</td>
-                        <td>R$ 78,90</td>
-                        <td>24/02/2024</td>
-                        <td>Exemplo</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </main>
-    </section>
-    <script id="tr-expand">
-        document.addEventListener("DOMContentLoaded", syncAnimatedTable)
-        
-        function syncAnimatedTable() {
-            const trs = document.querySelectorAll('tbody tr');
-
-            trs.forEach(function(tr) {
-                const originalHeight = tr.clientHeight;
-                const expandedHeight = originalHeight * 1.5; // Altura final ao expandir
-                const animationDuration = 350; // Duração da animação em milissegundos
-                const increment = (expandedHeight - originalHeight) / (animationDuration / 16); // 16ms é o intervalo de tempo para cada frame (1000ms / 60fps)
-
-                let currentHeight = originalHeight;
-                let animationFrameId;
-                let isExpanded = false;
-
-                tr.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    cancelAnimationFrame(animationFrameId);
-                    if (isExpanded) {
-                        shrink();
-                    } else {
-                        expand();
-                    }
-                });
-
-                function expand() {
-                    if (currentHeight < expandedHeight) {
-                        currentHeight += increment;
-                        tr.style.height = currentHeight + 'px';
-                        tr.style.fontWeight = 'bold';
-                        animationFrameId = requestAnimationFrame(expand);
-                    } else {
-                        tr.style.height = expandedHeight + 'px';
-                        tr.style.fontWeight = 'bold';
-                        isExpanded = true;
-                    }
-                }
-
-                function shrink() {
-                    if (currentHeight > originalHeight) {
-                        currentHeight -= increment;
-                        tr.style.height = currentHeight + 'px';
-                        animationFrameId = requestAnimationFrame(shrink);
-                    } else {
-                        tr.style.height = originalHeight + 'px';
-                        tr.style.fontWeight = 'normal';
-                        isExpanded = false;
-                    }
-                }
-            });
-        };
-    </script>
-    <script src="src/Helpers.js"></script>
-    <script src="src/JsonTable.js"></script>
-    <script src="src/FilterableJsonTable.js"></script>
-    <script id="tableAdmin">
-        document.addEventListener('DOMContentLoaded', function () {
-            const myTable = document.querySelector('#result-transacoes');
-            const myTableMenu = document.querySelector('nav > section');
-            const myNav = document.querySelector('nav > .filtros');
-            const cabecalho = {};
-
-            let tabela;
-            let ordAtual = null;
-            let ord = true;
-
-            myTable.querySelectorAll('thead th').forEach(item => {
-                cabecalho[item.dataset.columnref] = item.innerText;
-            });
-
-            function syncAllTable() {
-                syncAnimatedTable();
-                syncThClick();
-            }
-
-            function syncThClick() {
-                const html_ths = myTable.querySelectorAll('thead th');
-                
-                html_ths.forEach(th => {
-                    th.addEventListener('click', function() {
-                        
-                        const coluna = this.dataset.columnref;
-                        
-                        if (ordAtual === coluna) {
-                            ord = !ord;
-                        } else {
-                            ordAtual = coluna;
-                            ord = true;
-                        }
-                        tabela.orderByPath(coluna, ord);
-                        tabela.renderTable(myTable);
-                        syncAllTable();
-                    })
-                })
-            }
-
-            function renderFilter() {
-                //Tipo, rangeValor, DataInit e DataFim, Categoria
-                const select_tipo = tabela.composeSelectFilter('tipo.nome', 'Tipo', 'tipo.id');
-                const select_categoria = tabela.composeSelectFilter('categoria.nome', 'Categoria', 'categoria.id');
-
-                myNav.appendChild(select_tipo);
-                myNav.appendChild(select_categoria);
-
-                select_tipo.addEventListener('change', function() {
-                    tabela.setFilterOption('tipo.id',this.value);
-                    tabela.setFilteredTable();
-                    tabela.renderTable(myTable);
-                    syncAllTable();
-                })
-
-                select_categoria.addEventListener('change', function() {
-                    tabela.setFilterOption('categoria.id',this.value);
-                    tabela.setFilteredTable();
-                    tabela.renderTable(myTable);
-                    syncAllTable();
-                })
-            }
-            
-            function refreshTable(refresh_data = false) {
-                getFetchReponse(refresh_data).then(data => {
-                    tabela = new FilterableJsonTable(data, cabecalho);
-                    tabela.renderTable(myTable);
-                    renderFilter();
-                    syncAllTable();
-                })
-            }
-            refreshTable();
-        })
-    </script>
-    -->
 </body>
 </html>
