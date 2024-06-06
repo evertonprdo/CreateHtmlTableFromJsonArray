@@ -11,30 +11,6 @@
         * {
             font-family: monospace;
         }
-        body {
-            height: 750vh;
-        }
-        #fragmento {
-            margin: 10px;
-            background-color: beige;
-            width: 750px;
-            min-height: 300px;
-        }
-        #frag-move {
-            margin: 10px;
-            background-color: bisque;
-            width: 750px;
-            height: 700vh;
-        }
-    </style>
-    <style>
-        #rotatingDiv {
-            width: 100px;
-            height: 100px;
-            background-color: blue;
-            margin: 50px auto;
-            position: relative;
-        }
     </style>
     <!--
     <style>
@@ -49,32 +25,6 @@
     -->
 </head>
 <body>
-    <button id="btn-move">Teste de Fragment</button>
-    <main style="display: flex;">
-        <div id="rotatingDiv"></div>
-        <div id="fragmento">
-        </div>
-        <div id="frag-move"></div>
-    </main>
     <script type="module" src="code/dist/index.js"></script>
-    <script>
-        // Função para iniciar a rotação
-        function startRotation() {
-            const rotatingDiv = document.getElementById('rotatingDiv');
-            let angle = 0;
-
-            // Função para atualizar a rotação
-            function rotate() {
-                angle = (angle + 1) % 360; // Incrementa o ângulo de rotação
-                rotatingDiv.style.transform = `rotate(${angle}deg)`;
-                requestAnimationFrame(rotate); // Chama a próxima frame de animação
-            }
-
-            rotate(); // Inicia a animação
-        }
-
-        // Inicia a rotação ao carregar a página
-        startRotation();
-    </script>
 </body>
 </html>
