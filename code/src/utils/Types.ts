@@ -1,3 +1,5 @@
+import { DataObject } from "../CreateTableByJson";
+
 export namespace Type {
     export type Option = {
         [prop: string]: string;
