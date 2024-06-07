@@ -1,8 +1,22 @@
-# Create Table By Json
-O nome talvez não reflita muito bem a ideia, é um criador de tabela em js que recebe dados no formato json, e manualmente definindo cabeçalho por path cria uma tabela em Html na estrutura padrão.
+# CreateHtmlTableByJsonArray
+## Listar dados em uma tabela HTML com um comando.
 
-## Exemplo de uso: 
- - tabela = new CreateTableByJson(json, {"tipo.nome": 'Tipo', "categoria.nome": "Categoria", "path": "th innerText"});
- - tabela.renderTable();
+Este projeto tem como objetivo converter um array de objetos JSON em uma tabela HTML de forma automática e padronizada. É útil para desenvolvedores que precisam exibir dados JSON em um formato tabular na web, sem a necessidade de criar a tabela manualmente.
 
-Atualmente o projeto está em desenvolvimento.
+## Requisitos do Json Array:
+
+- Certifique-se de usar .json() nos seus dados.
+- O JSON precisa ser uma array de objetos(lista).
+- Os objetos precisam ser do mesmo tipo (ter o mesmo esquema).
+- Qualquer inconsistência na estrutura(esquema) poderá ter resultados inesperados.
+- Inicialmente, este projeto não se compromete a lidar com arrays dentro do JSON Array.
+ 
+Obs: Cabeçalho quando omitido usara a primeira linha como referência.
+
+ ### A "versão 1.0" se comprote a:
+ - [ ] Desenvolver uma base de código modular e escalável.
+ - [ ] Receber o JSON Array, construir e renderizar a tabela HTML.
+ - [ ] Ordenar a tabela pelo cabeçalho.
+ - [ ] Rodapé com função columnSum().
+
+Atualmente o projeto está em desenvolvimento, exemplos serám adicionais quando estiver funcional, para acompanhar a usabilidade acesse ./code/src/index.ts
