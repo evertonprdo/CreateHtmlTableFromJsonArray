@@ -1,19 +1,9 @@
-import { DataObject } from "../CreateTableByJson";
-
 export namespace Type {
-    export type Option = {
-        [prop: string]: string;
-    }
+    type Primitive = string | number | boolean | null;
 
-    export type NestedOption = {
-        [prop:string]: Option
-    }
+    type JsonArray = Array<Primitive | JsonObject | JsonArray>;
     
-    export type DataObject = {
-        [prop: string]: any
-    }[]
-    
-    export type DataItem = {
-        [prop: string]: any
+    export type JsonObject = {
+        [prop: string]: Primitive | JsonObject | JsonArray;
     }
 }

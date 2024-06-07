@@ -16,40 +16,69 @@ export namespace Utils {
     }
 
     export abstract class Data {
-        /**
-         * Função para pegar um valor pelo caminho ('path.value') dentro do objeto, funciona para caminhos não aninhados.
-         * @param obj um item do array de dados
-         * @param path caminho para o valor do item ex: 'categoria.nome'
-         * @returns Retorna o valor dentro do objeto.
-         */
-        static getNestedProperty(obj: object, path: string) {
-            const keys = path.split('.');
-            return keys.reduce((prev: {[prop: string]: any}, curr: string) => {
-                return prev && prev[curr] !== undefined ? prev[curr] : undefined;
-            }, obj);
+        static getValueByPath(obj: Type.JsonObject, path: string) {
+            const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+            let value: Type.JsonObject = obj;
+            for (const key of keys) {
+                value = value[key];
+                if (value === undefined) {
+                    return null;
+                }
+            }
+            return value;
         }
 
-        /**
-         * Função que recebe um item do array de dados e horizontaliza as chaves dos objetos.
-         * @param obj um item do array de dados.
-         * @param is_header o item recebido possui valores do cabeçalho?
-         * @param prefix parametro auxiliar para chamada própria
-         * @returns Retorna um objeto no formato OptionType, com todas as chaves horizontalizadas.
-         */
-        static getAllPaths(obj: Type.DataItem, is_header = false, prefix = ''): Type.Option {
-            let paths: Type.Option = {};
+        static getAllPaths(obj: Type.JsonObject, currentPath = '') {
+            let paths: string[] = [];
             
-            for (let key in obj) {
+            for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
-                    const new_key = prefix ? `${prefix}.${key}` : key;
+                    const newPath = currentPath ? `${currentPath}.${key}` : key;
+                    
                     if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-                        Object.assign(paths, this.getAllPaths(obj[key], is_header, new_key));
+                        paths = paths.concat(this.getAllPaths(obj[key], newPath));
+                    } else if (Array.isArray(obj[key])) {
+                        obj[key].forEach((item, index) => {
+                            if (typeof item === 'object' && item !== null) {
+                                paths = paths.concat(this.getAllPaths(item, `${newPath}[${index}]`));
+                            } else {
+                                paths.push(`${newPath}[${index}]`);
+                            }
+                        });
                     } else {
-                        paths[new_key] = is_header ? obj[key] : new_key
+                        paths.push(newPath);
                     }
                 }
             }
+            
             return paths;
+        }
+
+        static getMaxArrayLength(jsonArray: Type.JsonObject[]) {
+            let max = 1;
+        
+            jsonArray.forEach(obj => {
+                function findMaxLength(obj: Type.JsonObject[]) {
+                    for (const key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            if (Array.isArray(obj[key])) {
+                                max = Math.max(max, obj[key].length);
+                                obj[key].forEach(item => {
+                                    if (typeof item === 'object' && item !== null) {
+                                        findMaxLength(item);
+                                    }
+                                });
+                            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                                findMaxLength(obj[key]);
+                            }
+                        }
+                    }
+                }
+                
+                findMaxLength(obj);
+            });
+        
+            return max;
         }
 
         /**
@@ -123,13 +152,5 @@ export namespace Utils {
             }
             return result;
         }
-
-        static doAllColumnsMatch(data: Type.DataObject, reff: Type.DataItem) {
-
-        }
-    }
-
-    export abstract class Html {
-
     }
 }

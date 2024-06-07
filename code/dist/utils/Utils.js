@@ -16,26 +16,65 @@ export var Utils;
     }
     Utils.Common = Common;
     class Data {
-        static getNestedProperty(obj, path) {
-            const keys = path.split('.');
-            return keys.reduce((prev, curr) => {
-                return prev && prev[curr] !== undefined ? prev[curr] : undefined;
-            }, obj);
+        static getValueByPath(obj, path) {
+            const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+            let value = obj;
+            for (const key of keys) {
+                value = value[key];
+                if (value === undefined) {
+                    return null;
+                }
+            }
+            return value;
         }
-        static getAllPaths(obj, is_header = false, prefix = '') {
-            let paths = {};
-            for (let key in obj) {
+        static getAllPaths(obj, currentPath = '') {
+            let paths = [];
+            for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
-                    const new_key = prefix ? `${prefix}.${key}` : key;
+                    const newPath = currentPath ? `${currentPath}.${key}` : key;
                     if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-                        Object.assign(paths, this.getAllPaths(obj[key], is_header, new_key));
+                        paths = paths.concat(this.getAllPaths(obj[key], newPath));
+                    }
+                    else if (Array.isArray(obj[key])) {
+                        obj[key].forEach((item, index) => {
+                            if (typeof item === 'object' && item !== null) {
+                                paths = paths.concat(this.getAllPaths(item, `${newPath}[${index}]`));
+                            }
+                            else {
+                                paths.push(`${newPath}[${index}]`);
+                            }
+                        });
                     }
                     else {
-                        paths[new_key] = is_header ? obj[key] : new_key;
+                        paths.push(newPath);
                     }
                 }
             }
             return paths;
+        }
+        static getMaxArrayLength(jsonArray) {
+            let max = 1;
+            jsonArray.forEach(obj => {
+                function findMaxLength(obj) {
+                    for (const key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            if (Array.isArray(obj[key])) {
+                                max = Math.max(max, obj[key].length);
+                                obj[key].forEach(item => {
+                                    if (typeof item === 'object' && item !== null) {
+                                        findMaxLength(item);
+                                    }
+                                });
+                            }
+                            else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                                findMaxLength(obj[key]);
+                            }
+                        }
+                    }
+                }
+                findMaxLength(obj);
+            });
+            return max;
         }
         static makeMyOwnDomTableDataObject(html_query) {
             const my_table = document.querySelector(html_query);
@@ -102,11 +141,6 @@ export var Utils;
             }
             return result;
         }
-        static doAllColumnsMatch(data, reff) {
-        }
     }
     Utils.Data = Data;
-    class Html {
-    }
-    Utils.Html = Html;
 })(Utils || (Utils = {}));
