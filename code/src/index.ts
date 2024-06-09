@@ -8,7 +8,7 @@ const main = new Controller.Main(
             .then(response => { return response.json(); })
             .then(data => { return data.products })
         )
-    })(), /*{
+    })(), {
     "title": "Titulo",
     "category": "Categoria",
     "price": "Preço",
@@ -19,9 +19,10 @@ const main = new Controller.Main(
     "meta.createdAt": "Data de Criação",
     "meta.updatedAt": "Data de Atualização",
     "images[]": "Imagens[]"
-    }*/
+    }
 );
 
+/*
 let path: string = 'tags.tag_names[]';
 
 console.log(Utils.Common.getNestedProperty({
@@ -47,4 +48,4 @@ console.log(Utils.Common.getNestedProperty({
         ]
     }
 }, path));
-
+*/
