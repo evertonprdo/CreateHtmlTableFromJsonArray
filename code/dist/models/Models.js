@@ -5,12 +5,14 @@ export var Models;
         data_headers;
         constructor(data) {
             this.data_array = data;
-            let aux = {};
+            let header = {};
             DataArray.getKeysFromJsonObject(data[0]).forEach(key => {
-                aux["render"] = "On";
-                aux[key] = key;
+                header[key] = {
+                    "render": true,
+                    "title": key
+                };
             });
-            this.data_headers = aux;
+            this.data_headers = header;
         }
         static getKeysFromJsonObject(obj, prefix = '') {
             let paths = [];
@@ -36,21 +38,28 @@ export var Models;
             return key in this.headers;
         }
         setHeaderTitle(key, title) {
-            this.headers[key] = title;
+            this.headers[key].title = title;
         }
-        switchState() {
+        switchRender(key) {
+            this.headers[key].render = !this.headers[key].render;
         }
-        removeKey(key) {
-            if (this.del_keys.includes(key)) {
-                this.del_keys.push(key);
-                this.cur_keys.splice(this.cur_keys.indexOf(key), 1);
-            }
+        setRender(headers) {
+            this.keys.forEach(key => {
+                if (headers.includes(key)) {
+                    this.headers[key].render = true;
+                }
+                else {
+                    this.headers[key].render = false;
+                }
+            });
         }
-        appendKey(key) {
-            if (this.del_keys.includes(key)) {
-                this.cur_keys.push(key);
-                delete this.deleted_headers[key];
-            }
+        getRenderKeys(render = true) {
+            const keys = [];
+            Object.keys(this.headers).forEach(key => {
+                if (this.headers[key].render === render)
+                    keys.push(key);
+            });
+            return keys;
         }
         get data() {
             return this.data_array;
@@ -60,12 +69,6 @@ export var Models;
         }
         get headers() {
             return this.data_headers;
-        }
-        get del_keys() {
-            return this.deleted_keys;
-        }
-        get cur_keys() {
-            return this.current_keys;
         }
     }
     Models.DataArray = DataArray;

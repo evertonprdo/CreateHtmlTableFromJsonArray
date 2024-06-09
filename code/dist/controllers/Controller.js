@@ -1,7 +1,21 @@
 import { Models } from "../models/Models.js";
+import { Renderer } from "../views/Renderer.js";
 export var Controller;
 (function (Controller) {
-    class DataArray {
+    class Main {
+        data;
+        render;
+        constructor(target, data, headers) {
+            this.data = new Data(data, headers);
+            this.render = new Render(target);
+            this.renderTable();
+        }
+        renderTable() {
+            this.render.renderTable(this.data.data_array, this.data.headers);
+        }
+    }
+    Controller.Main = Main;
+    class Data {
         data;
         constructor(data, headers) {
             this.data = new Models.DataArray(data);
@@ -35,41 +49,47 @@ export var Controller;
         popHeader(key) {
             if (!this.data.isHeaderKey(key))
                 throw new Error;
-            return this.data.removeHeader(key);
+            if (this.data.headers[key].render === true)
+                this.data.switchRender(key);
         }
         pushHeader(key) {
             if (!this.data.isHeaderKey(key))
                 throw new Error;
-            return this.data.bringHeaderBack(key);
+            if (this.data.headers[key].render === false)
+                this.data.switchRender(key);
         }
-        setHeaders(set_headers) {
-            set_headers.forEach(key => {
+        setHeaders(headers) {
+            headers.forEach(key => {
                 if (!this.data.isHeaderKey(key))
                     throw new Error;
             });
-            this.data.keys.forEach(key => {
-                if (set_headers.includes(key)) {
-                    if ((key in this.data.deleted_headers)) {
-                        this.data.bringHeaderBack(key);
-                    }
-                }
-                else if (key in this.data.headers) {
-                    this.data.removeHeader(key);
-                }
-            });
-        }
-        get keys() {
-            return this.data.keys;
-        }
-        get del_headers() {
-            return this.data.deleted_headers;
-        }
-        get cur_headers() {
-            return this.data.headers;
+            this.data.setRender(headers);
         }
         get headers() {
-            return Object.assign(this.data.headers, this.data.deleted_headers);
+            const key_title = {};
+            this.data.getRenderKeys().forEach(key => {
+                key_title[key] = this.data.headers[key].title;
+            });
+            return key_title;
+        }
+        get data_array() {
+            return this.data.data;
         }
     }
-    Controller.DataArray = DataArray;
+    Controller.Data = Data;
+    class Render {
+        target;
+        html_table;
+        constructor(target) {
+            target.innerText = "";
+            this.html_table = new Renderer.TableHtml();
+            this.target = target;
+        }
+        renderTable(data, headers) {
+            const fragment = this.html_table.startRender(data, headers);
+            this.target.innerText = "";
+            this.target.appendChild(fragment);
+        }
+    }
+    Controller.Render = Render;
 })(Controller || (Controller = {}));
