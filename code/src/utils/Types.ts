@@ -8,6 +8,7 @@ export namespace Type {
     export type JsonArray = Array<JsonObject>;
 
     export type Headers = {
+        render: string
         [prop: string]: string
     }
 }

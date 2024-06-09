@@ -1,49 +1,72 @@
 export var Models;
 (function (Models) {
-    class Main {
-        data;
-        constructor(data, headers) {
-            this.data = new DataArray(data);
-            this.data.setDataHeaders(data, headers);
-        }
-    }
-    Models.Main = Main;
     class DataArray {
-        data;
-        headers = {};
+        data_array;
+        data_headers;
         constructor(data) {
-            this.data = data;
+            this.data_array = data;
+            let aux = {};
+            DataArray.getKeysFromJsonObject(data[0]).forEach(key => {
+                aux["render"] = "On";
+                aux[key] = key;
+            });
+            this.data_headers = aux;
         }
-        static getHeadersFromJsonArray(data, prefix = '') {
-            const obj = data[0];
-            let paths = {};
+        static getKeysFromJsonObject(obj, prefix = '') {
+            let paths = [];
             for (let key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     const new_key = prefix ? `${prefix}.${key}` : key;
                     if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-                        Object.assign(paths, this.getHeadersFromJsonArray(obj[key], new_key));
+                        paths = paths.concat(this.getKeysFromJsonObject(obj[key], new_key));
                     }
                     else {
-                        paths[new_key] = new_key;
+                        if (Array.isArray(obj[key])) {
+                            paths.push(new_key + '[]');
+                        }
+                        else {
+                            paths.push(new_key);
+                        }
                     }
                 }
             }
             return paths;
         }
-        setDataHeaders(data, headers) {
-            let result = {};
-            if (headers) {
-                if (headers instanceof Array) {
-                    headers.forEach(key => {
-                        result[key] = key;
-                    });
-                }
+        isHeaderKey(key) {
+            return key in this.headers;
+        }
+        setHeaderTitle(key, title) {
+            this.headers[key] = title;
+        }
+        switchState() {
+        }
+        removeKey(key) {
+            if (this.del_keys.includes(key)) {
+                this.del_keys.push(key);
+                this.cur_keys.splice(this.cur_keys.indexOf(key), 1);
             }
-            else {
-                result = DataArray.getHeadersFromJsonArray(data);
+        }
+        appendKey(key) {
+            if (this.del_keys.includes(key)) {
+                this.cur_keys.push(key);
+                delete this.deleted_headers[key];
             }
-            this.headers = result;
-            return result;
+        }
+        get data() {
+            return this.data_array;
+        }
+        get keys() {
+            return Object.keys(this.data_headers);
+        }
+        get headers() {
+            return this.data_headers;
+        }
+        get del_keys() {
+            return this.deleted_keys;
+        }
+        get cur_keys() {
+            return this.current_keys;
         }
     }
+    Models.DataArray = DataArray;
 })(Models || (Models = {}));
