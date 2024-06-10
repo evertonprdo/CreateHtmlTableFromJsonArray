@@ -1,27 +1,26 @@
-import { Models } from "../models/Models.js";
 import { Type } from "../utils/Types.js";
-import { Utils } from "../utils/Utils.js";
 
 export namespace Renderer {
     export class TableHtml {
-        private readonly table: HTMLTableElement;
+        private readonly html_thead: HTMLTableSectionElement;
+        private readonly html_tbody: HTMLTableSectionElement;
+        
         private fragment: DocumentFragment;
 
         constructor() {
             this.fragment = document.createDocumentFragment();
-            this.table = document.createElement('table');
+            this.html_thead = document.createElement('thead');
+            this.html_tbody = document.createElement('tbody');
         }
 
-        startRender(data: Type.Option[], headers: string[]): DocumentFragment {
-            this.table.append(this.createThead(headers));
-            this.table.append(this.renderTableBody(data, headers));
-            this.fragment.append(this.table);
-            //this.renderTfoot();
+        startRender(data: Type.ObjString[], headers: Type.ObjString): DocumentFragment {
+            this.createThead(headers);
+            this.createTableBody(data, Object.keys(headers));
+            this.fragment.append(this.thead, this.tbody);
             return this.fragment;
         }
 
-        private createThead(headers: Type.Option): HTMLTableSectionElement {
-            const thead = document.createElement('thead');
+        private createThead(headers: Type.ObjString): HTMLTableSectionElement {
             const tr = document.createElement('tr');
             Object.keys(headers).forEach(key => {
                 const th = document.createElement('th');
@@ -29,18 +28,17 @@ export namespace Renderer {
                 th.innerText = headers[key];
                 tr.appendChild(th);
             })
-            thead.addEventListener('click', function(event) {
+            this.thead.addEventListener('click', function(event) {
                 if(event.target !== null) {
                     const click: string | undefined = (event.target as HTMLTableCellElement).dataset.eventTracker;
                     console.log(click);
                 }
             })
-            thead.appendChild(tr);
-            return thead;
+            this.thead.appendChild(tr);
+            return this.thead;
         };
 
-        renderTableBody(rows: Type.Option[], columns: string[]): HTMLTableSectionElement {
-            const tbody = document.createElement('tbody');
+        createTableBody(rows: Type.ObjString[], columns: string[]): HTMLTableSectionElement {
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 columns.forEach(column => {
@@ -48,13 +46,17 @@ export namespace Renderer {
                     td.innerText = row[column];
                     tr.appendChild(td);
                 })
-                tbody.appendChild(tr);
+                this.tbody.appendChild(tr);
             })
-            return tbody;
+            return this.tbody;
         }
 
-        private renderTfoot(){
+        get thead() {
+            return this.html_thead;
+        }
 
+        get tbody() {
+            return this.html_tbody;
         }
     }
 }

@@ -22,7 +22,7 @@
                     @include high.th(true);
                     
                     @include layout.colConfig();
-                    @include skin.colConfig();
+                    //@include skin.colConfig();
                 }
             }
         }
@@ -40,7 +40,7 @@
                     @include high.td();
 
                     @include layout.colConfig();
-                    @include skin.colConfig();
+                    //@include skin.colConfig();
                 }
             }
         }
@@ -58,8 +58,8 @@
                     @include high.th();
 
                     @include Helpers.round(skin.$conf-round, $top: false);
-                    @include layout.colConfig();
-                    @include skin.colConfig();
+                    //@include layout.colConfig();
+                    //@include skin.colConfig();
                 }
             }
         }

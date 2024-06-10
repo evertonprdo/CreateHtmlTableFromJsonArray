@@ -7,13 +7,16 @@ export namespace Type {
     
     export type JsonArray = Array<JsonObject>;
 
-    export type Option = {
-        [prop: string]: string 
+    export type ObjString = {
+        [prop: string]: string
     }
     export type Headers = {
         [prop: string]: {
             title: string
             render: boolean
+            format_to: FormatTo
         }
     }
+
+    export type FormatTo = "DATE" | "CURRENCY" | "FLOAT_FIX" | "PERCENT" | "default"
 }

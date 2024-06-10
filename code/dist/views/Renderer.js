@@ -1,20 +1,21 @@
 export var Renderer;
 (function (Renderer) {
     class TableHtml {
-        table;
+        html_thead;
+        html_tbody;
         fragment;
         constructor() {
             this.fragment = document.createDocumentFragment();
-            this.table = document.createElement('table');
+            this.html_thead = document.createElement('thead');
+            this.html_tbody = document.createElement('tbody');
         }
         startRender(data, headers) {
-            this.table.append(this.createThead(headers));
-            this.table.append(this.renderTableBody(data, headers));
-            this.fragment.append(this.table);
+            this.createThead(headers);
+            this.createTableBody(data, Object.keys(headers));
+            this.fragment.append(this.thead, this.tbody);
             return this.fragment;
         }
         createThead(headers) {
-            const thead = document.createElement('thead');
             const tr = document.createElement('tr');
             Object.keys(headers).forEach(key => {
                 const th = document.createElement('th');
@@ -22,18 +23,17 @@ export var Renderer;
                 th.innerText = headers[key];
                 tr.appendChild(th);
             });
-            thead.addEventListener('click', function (event) {
+            this.thead.addEventListener('click', function (event) {
                 if (event.target !== null) {
                     const click = event.target.dataset.eventTracker;
                     console.log(click);
                 }
             });
-            thead.appendChild(tr);
-            return thead;
+            this.thead.appendChild(tr);
+            return this.thead;
         }
         ;
-        renderTableBody(rows, columns) {
-            const tbody = document.createElement('tbody');
+        createTableBody(rows, columns) {
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 columns.forEach(column => {
@@ -41,11 +41,15 @@ export var Renderer;
                     td.innerText = row[column];
                     tr.appendChild(td);
                 });
-                tbody.appendChild(tr);
+                this.tbody.appendChild(tr);
             });
-            return tbody;
+            return this.tbody;
         }
-        renderTfoot() {
+        get thead() {
+            return this.html_thead;
+        }
+        get tbody() {
+            return this.html_tbody;
         }
     }
     Renderer.TableHtml = TableHtml;

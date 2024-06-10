@@ -1,10 +1,7 @@
+import { Resume } from "../config/Config.js";
 import { Type } from "./Types.js";
 
 export namespace Utils {
-    const content_limit = 50;
-    const arr_slice = 2;
-    const arr_resume_inner = true;
-
     export abstract class Common {
         static stringToSlug(texto:string, keep_dot:boolean = false): string {
             let result = texto.normalize('NFD')
@@ -17,7 +14,9 @@ export namespace Utils {
             if(!keep_dot) result = result.replace(/\./g, '');
             return result;
         }
+    }
 
+    export abstract class Data {
         static getNestedProperty(obj: Type.JsonObject, path: string) {          
             let result: Type.Primitive | Array<Type.JsonObject | Type.Primitive>;
             
@@ -40,52 +39,109 @@ export namespace Utils {
             }
             return result;
         }
+
+        static getKeysFromJsonObject(obj: Type.JsonObject, prefix = ''): string[] {
+            let paths: string[] = [];
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    const new_key = prefix ? `${prefix}.${key}` : key;
+                    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                        paths = paths.concat(this.getKeysFromJsonObject((obj[key] as Type.JsonObject), new_key));
+                    } else {
+                        if (Array.isArray(obj[key])) {
+                            paths.push(new_key + '[]');
+                        } else {
+                            paths.push(new_key);
+                        }
+                    }
+                }
+            }
+            return paths;
+        }
     }
 
     export abstract class Format {
-        static resumeString(str: string, limit:number = content_limit) {
+        static resumeString(str: string, limit:number = Resume.content_limit) {
             if(str.length > limit) {
                 str = str.slice(0, limit - 3) + "...";
             }
             return str;
         }
 
-        static resumeArrayContent(arr: Array<Type.Primitive>) {
+        static valueTo(value: unknown, type: Type.FormatTo): string {
+            let result: Type.Primitive | object;
+            switch (type) {               
+                case "FLOAT_FIX":
+                    result = String(Utils.Format.valueToFloat(value));
+                    break;
+                case "DATE":
+                    result = new Date(String(value)).toLocaleString();
+                    break;
+                case "CURRENCY":
+                    result = Utils.Format.valueToFloat(value, 2).toLocaleString();
+                    break;
+                case "PERCENT":
+                    result = String(Utils.Format.valueToFloat(value, 1))+"%";
+                    break;
+                default:
+                    result = Utils.Format.valueToString(value);
+                    break;
+            }
+            return result
+        }
+
+        static resumeArrayContent(
+            arr: Array<Type.Primitive>, 
+            limit = Resume.content_limit, 
+            inner_resume_on = Resume.arr_resume_inner, 
+            slice_array = Resume.arr_slice
+        ): string {
+            
             let size: number = arr.length
             if(size === 0) return "(0)Arr[]";
-            arr = arr.slice(0, arr_slice);
-
-            let inner_limit = (Math.round(content_limit / arr.length) - 9);
-            inner_limit = inner_limit < 3 ? 3: inner_limit;
-
+            
             let head: string = `(${size})Arr[`;
+            let end: string = size > slice_array ? ", [...]]" : "]";
+            
+            arr = arr.slice(0, slice_array);
+            let inner_limit = Math.round((limit - (((arr.length -1) * 2) + head.length + end.length)) / arr.length) ;
+            inner_limit = inner_limit < 3 ? 3: inner_limit;
+            
             let body: string;
-            let end: string;
-            if(size > arr_slice) { end = ", [...]" } else { end = "]" }
-
             if(typeof arr[0] === "object" && arr[0] !== null) {
                 body = "{...}";
             } else {
-                if(arr_resume_inner) {
+                if(inner_resume_on) {
                     body = this.resumeString(String(arr[0]), inner_limit)
                 } else {
                     body = String(arr[0])
                 }
             }
-            
             for (let i = 1; i < arr.length; i++) {
                 if(typeof arr[i] === "object" && arr[i] !== null) {
-                    head += ", {...}"
+                    body += ", {...}"
                 } else {
-                    if(arr_resume_inner) {
-                        head += ", " + this.resumeString(String(arr[i]), inner_limit)
+                    if(inner_resume_on) {
+                        body += ", " + this.resumeString(String(arr[i]), inner_limit)
                     } else {
-                        head += ", " + String(arr[i])
+                        body += ", " + String(arr[i])
                     }
                 }
             }
-            if(size > arr_slice) { head += ", [...]" }
-            return head += "]"
+            return head + body + end
+        }
+
+        static valueToString(value: unknown): string {
+            if (value === undefined) { return "not found" }
+            if (value === null) { return "null" }
+            if (value === "") { return "empty" }
+            if (Array.isArray(value)) { return Utils.Format.resumeArrayContent(value) }
+            return Utils.Format.resumeString(String(value));
+        }
+
+        static valueToFloat(value: unknown, fix: number = Resume.float_fix): number {
+            if(typeof value === "number") { return parseFloat(value.toFixed(fix)) }
+            return Number(parseFloat(String(value)).toFixed(fix));
         }
     }
 }

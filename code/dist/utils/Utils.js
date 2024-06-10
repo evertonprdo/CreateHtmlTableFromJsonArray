@@ -1,8 +1,6 @@
+import { Resume } from "../config/Config.js";
 export var Utils;
 (function (Utils) {
-    const content_limit = 50;
-    const arr_slice = 2;
-    const arr_resume_inner = true;
     class Common {
         static stringToSlug(texto, keep_dot = false) {
             let result = texto.normalize('NFD')
@@ -16,6 +14,9 @@ export var Utils;
                 result = result.replace(/\./g, '');
             return result;
         }
+    }
+    Utils.Common = Common;
+    class Data {
         static getNestedProperty(obj, path) {
             let result;
             if (path.includes(".")) {
@@ -39,36 +40,71 @@ export var Utils;
             }
             return result;
         }
+        static getKeysFromJsonObject(obj, prefix = '') {
+            let paths = [];
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    const new_key = prefix ? `${prefix}.${key}` : key;
+                    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                        paths = paths.concat(this.getKeysFromJsonObject(obj[key], new_key));
+                    }
+                    else {
+                        if (Array.isArray(obj[key])) {
+                            paths.push(new_key + '[]');
+                        }
+                        else {
+                            paths.push(new_key);
+                        }
+                    }
+                }
+            }
+            return paths;
+        }
     }
-    Utils.Common = Common;
+    Utils.Data = Data;
     class Format {
-        static resumeString(str, limit = content_limit) {
+        static resumeString(str, limit = Resume.content_limit) {
             if (str.length > limit) {
                 str = str.slice(0, limit - 3) + "...";
             }
             return str;
         }
-        static resumeArrayContent(arr) {
+        static valueTo(value, type) {
+            let result;
+            switch (type) {
+                case "FLOAT_FIX":
+                    result = String(Utils.Format.valueToFloat(value));
+                    break;
+                case "DATE":
+                    result = new Date(String(value)).toLocaleString();
+                    break;
+                case "CURRENCY":
+                    result = Utils.Format.valueToFloat(value, 2).toLocaleString();
+                    break;
+                case "PERCENT":
+                    result = String(Utils.Format.valueToFloat(value, 1)) + "%";
+                    break;
+                default:
+                    result = Utils.Format.valueToString(value);
+                    break;
+            }
+            return result;
+        }
+        static resumeArrayContent(arr, limit = Resume.content_limit, inner_resume_on = Resume.arr_resume_inner, slice_array = Resume.arr_slice) {
             let size = arr.length;
             if (size === 0)
                 return "(0)Arr[]";
-            arr = arr.slice(0, arr_slice);
-            let inner_limit = (Math.round(content_limit / arr.length) - 9);
-            inner_limit = inner_limit < 3 ? 3 : inner_limit;
             let head = `(${size})Arr[`;
+            let end = size > slice_array ? ", [...]]" : "]";
+            arr = arr.slice(0, slice_array);
+            let inner_limit = Math.round((limit - (((arr.length - 1) * 2) + head.length + end.length)) / arr.length);
+            inner_limit = inner_limit < 3 ? 3 : inner_limit;
             let body;
-            let end;
-            if (size > arr_slice) {
-                end = ", [...]";
-            }
-            else {
-                end = "]";
-            }
             if (typeof arr[0] === "object" && arr[0] !== null) {
                 body = "{...}";
             }
             else {
-                if (arr_resume_inner) {
+                if (inner_resume_on) {
                     body = this.resumeString(String(arr[0]), inner_limit);
                 }
                 else {
@@ -77,21 +113,39 @@ export var Utils;
             }
             for (let i = 1; i < arr.length; i++) {
                 if (typeof arr[i] === "object" && arr[i] !== null) {
-                    head += ", {...}";
+                    body += ", {...}";
                 }
                 else {
-                    if (arr_resume_inner) {
-                        head += ", " + this.resumeString(String(arr[i]), inner_limit);
+                    if (inner_resume_on) {
+                        body += ", " + this.resumeString(String(arr[i]), inner_limit);
                     }
                     else {
-                        head += ", " + String(arr[i]);
+                        body += ", " + String(arr[i]);
                     }
                 }
             }
-            if (size > arr_slice) {
-                head += ", [...]";
+            return head + body + end;
+        }
+        static valueToString(value) {
+            if (value === undefined) {
+                return "not found";
             }
-            return head += "]";
+            if (value === null) {
+                return "null";
+            }
+            if (value === "") {
+                return "empty";
+            }
+            if (Array.isArray(value)) {
+                return Utils.Format.resumeArrayContent(value);
+            }
+            return Utils.Format.resumeString(String(value));
+        }
+        static valueToFloat(value, fix = Resume.float_fix) {
+            if (typeof value === "number") {
+                return parseFloat(value.toFixed(fix));
+            }
+            return Number(parseFloat(String(value)).toFixed(fix));
         }
     }
     Utils.Format = Format;

@@ -3,12 +3,12 @@
 
 // ----- Inicio do Escopo Principal ----- */
 table {
-  background-color: #47d1bf;
+  background-color: #76c9ad;
   border-radius: 7px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
 }
 table thead tr {
-  background-color: #47d1bf;
+  background-color: #76c9ad;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
   border-radius: 7px 7px 0 0;
 }
@@ -36,22 +36,7 @@ table thead tr th:last-child {
   border-radius: 0 7px 0 0;
 }
 table thead tr th:hover, table thead tr th:focus {
-  background-color: #64e7d6;
-}
-table thead tr th:nth-child(1) {
-  text-align: center;
-}
-table thead tr th:nth-child(2) {
-  text-align: initial;
-}
-table thead tr th:nth-child(3) {
-  text-align: center;
-}
-table thead tr th:nth-child(4) {
-  text-align: center;
-}
-table thead tr th:nth-child(5) {
-  text-align: center;
+  background-color: #86ecca;
 }
 table tbody {
   background-color: #f6f9f8;
@@ -60,13 +45,13 @@ table tbody tr {
   transition: background-color 0.35s ease, font-size 0.35s ease;
 }
 table tbody tr:not(:last-child) {
-  border-bottom: 1px solid #006659;
+  border-bottom: 1px solid #006644;
 }
 table tbody tr:nth-child(odd) {
-  background-color: #e9f2f0;
+  background-color: #e9f2ef;
 }
 table tbody tr:hover {
-  background-color: #c7e1dd;
+  background-color: #c7e1d8;
 }
 table tbody tr td {
   padding: 7px;
@@ -81,36 +66,11 @@ table tbody tr td {
       }
   */
 }
-table tbody tr td:nth-child(1) {
-  text-align: center;
-}
-table tbody tr td:nth-child(2) {
-  text-align: initial;
-}
-table tbody tr td:nth-child(3) {
-  text-align: center;
-}
-table tbody tr td:nth-child(4) {
-  text-align: center;
-}
-table tbody tr td:nth-child(5) {
-  text-align: center;
-}
 table tfoot tr td {
   padding: 7px;
   padding: 10px;
   font-weight: bold;
   min-height: 30px;
-  /*
-      width: 15%;
-
-      &:nth-child(1) {
-          width: 5%;
-      }
-      &:nth-child(2) {
-          width: 50%;
-      }
-  */
 }
 table tfoot tr td:first-child {
   border-radius: 7px 0 0 0;
@@ -124,32 +84,18 @@ table tfoot tr td:first-child {
 table tfoot tr td:last-child {
   border-radius: 0 0 7px 0;
 }
-table tfoot tr td:nth-child(1) {
-  text-align: center;
-}
-table tfoot tr td:nth-child(2) {
-  text-align: initial;
-}
-table tfoot tr td:nth-child(3) {
-  text-align: center;
-}
-table tfoot tr td:nth-child(4) {
-  text-align: center;
-}
-table tfoot tr td:nth-child(5) {
-  text-align: center;
-}
-
-body {
-  max-width: 1920px;
-  padding: 5px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  margin: auto;
-}
 
 /*
+body {
+    max-width: 1920px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+
+    align-items: stretch;
+    margin: auto;
+}
+
 section.main-content {
     display: flex;
     width: 100%;

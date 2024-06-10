@@ -7,133 +7,74 @@ export var Controller;
         data;
         render;
         constructor(target, data, headers) {
-            this.data = new Data(data, headers);
-            this.render = new Render(target);
-            this.renderTable();
-        }
-        renderTable() {
-            const headers = this.data.headers;
-            const rows = this.render.composeFormateStringRows(this.data.data_array, Object.keys(headers));
-            this.render.renderTable(rows, Object.keys(headers));
-        }
-    }
-    Controller.Main = Main;
-    class Data {
-        data;
-        constructor(data, headers) {
             this.data = new Models.DataArray(data);
+            this.render = new Render(target);
             if (headers) {
                 if (Array.isArray(headers)) {
-                    this.setHeaders(headers);
+                    this.data.setRender(headers);
                 }
                 else {
-                    this.setHeaderTitle(headers);
-                    this.setHeaders(Object.keys(headers));
+                    this.data.setTitles(headers);
+                    this.data.setRender(Object.keys(headers));
                 }
             }
             ;
+            this.startTable();
         }
-        setHeaderTitle(header, title) {
-            if (typeof header === "object" && header !== null) {
-                for (const key in header) {
-                    if (!this.data.isHeaderKey(key))
-                        throw new Error;
-                }
-                for (const key in header) {
-                    this.data.setHeaderTitle(key, header[key]);
-                }
-            }
-            else if (typeof header === "string" && title) {
-                if (!this.data.isHeaderKey(header))
-                    throw new Error;
-                this.data.setHeaderTitle(header, title);
-            }
+        startTable() {
+            const rows = this.render.composeFormatedStringRows(this.data_class.array, this.data.keys, this.data.headers);
+            this.render.tableBody(rows, this.data.keys);
+            this.render.tableHead(this.data.render_titles);
+            this.render.renderTable(rows, this.data.render_titles);
         }
-        popHeader(key) {
-            if (!this.data.isHeaderKey(key))
-                throw new Error;
-            if (this.data.headers[key].render === true)
-                this.data.switchRender(key);
+        get data_class() {
+            return this.data;
         }
-        pushHeader(key) {
-            if (!this.data.isHeaderKey(key))
-                throw new Error;
-            if (this.data.headers[key].render === false)
-                this.data.switchRender(key);
-        }
-        setHeaders(headers) {
-            headers.forEach(key => {
-                if (!this.data.isHeaderKey(key))
-                    throw new Error;
-            });
-            this.data.setRender(headers);
-        }
-        get headers() {
-            const key_title = {};
-            this.data.getRenderKeys().forEach(key => {
-                key_title[key] = this.data.headers[key].title;
-            });
-            return key_title;
-        }
-        get data_array() {
-            return this.data.data;
-        }
-        get keys() {
-            return this.data.keys;
+        get render_class() {
+            return this.render;
         }
     }
+    Controller.Main = Main;
     class Render {
         target;
         html_table;
         constructor(target) {
-            target.innerText = "";
+            if (target instanceof HTMLTableElement) {
+                target.innerText = "";
+                this.target = target;
+            }
+            else {
+                target.innerText = "";
+                const table = document.createElement('table');
+                target.appendChild(table);
+                this.target = table;
+            }
             this.html_table = new Renderer.TableHtml();
-            this.target = target;
         }
-        renderTable(data, headers) {
-            const fragment = this.html_table.startRender(data, headers);
+        renderTable(rows, headers) {
+            const fragment = this.html_table.startRender(rows, headers);
             this.target.innerText = "";
             this.target.appendChild(fragment);
         }
-        renderTBody(rows, columns) {
+        tableHead(columns) {
         }
-        composeFormateStringRows(data, keys) {
+        tableBody(rows, columns) {
+        }
+        composeFormatedStringRows(data, render_keys, headers) {
             const result = [];
             data.forEach(item => {
                 const row = {};
-                keys.forEach(column => {
-                    let value = Utils.Common.getNestedProperty(item, column);
-                    value = this.formatValueAsString(value);
-                    row[column] = String(value);
+                render_keys.forEach(column => {
+                    let value = Utils.Data.getNestedProperty(item, column);
+                    value = Utils.Format.valueTo(value, headers[column].format_to);
+                    row[column] = value;
                 });
                 result.push(row);
             });
-            console.log(result);
             return result;
         }
-        formatValueAsString(value) {
-            if (value === undefined) {
-                return "not found";
-            }
-            if (value === null) {
-                return "null";
-            }
-            if (value === "") {
-                return "empty";
-            }
-            const arr = [];
-            if (Array.isArray(value)) {
-                value.forEach(val => {
-                    if (typeof val === "object" && val !== null) {
-                        arr.push("{...}");
-                    }
-                    else {
-                        arr.push(this.formatValueAsString(val));
-                    }
-                });
-                return Utils.Format.resumeArrayContent(arr);
-            }
-            return Utils.Format.resumeString(String(value));
+        get html_class() {
+            return this.html_table;
         }
     }
 })(Controller || (Controller = {}));

@@ -5,26 +5,46 @@ import { Utils } from "../utils/Utils.js";
 
 export namespace Controller {
     export class Main {
-        data: Data;
-        render: Render;
+        private data: Models.DataArray;
+        private render: Render;
 
-        constructor(target: HTMLElement, data: Type.JsonArray, headers?: string[] | Type.Option) {
-            this.data = new Data(data, headers);
+        constructor(target: HTMLElement, data: Type.JsonArray, headers?: string[] | Type.ObjString) {
+            this.data = new Models.DataArray(data);
             this.render = new Render(target);
-            this.renderTable();
+            if(headers) {
+                if(Array.isArray(headers)) {
+                    this.data.setRender(headers);
+                } else {
+                    this.data.setTitles(headers);
+                    this.data.setRender(Object.keys(headers));
+                }
+            };
+
+            this.startTable();
         }
 
-        renderTable() {
-            const headers = this.data.headers
-            const rows = this.render.composeFormateStringRows(this.data.data_array, Object.keys(headers))
-            this.render.renderTable(rows, Object.keys(headers));
+        startTable() {
+            const rows = this.render.composeFormatedStringRows(this.data_class.array, this.data.keys, this.data.headers)
+            this.render.tableBody(rows, this.data.keys);
+            this.render.tableHead(this.data.render_titles);
+            this.render.renderTable(rows, this.data.render_titles);
+        }
+
+        get data_class() {
+            return this.data;
+        }
+
+        get render_class() {
+            return this.render;
         }
     }
 
+    // Controller Data deixa de existir.
+    /*
     class Data {
         private data: Models.DataArray;
         
-        constructor(data: Type.JsonArray, headers?: string[] | Type.Option) {
+        constructor(data: Type.JsonArray, headers?: string[] | Type.ObjString) {
             this.data = new Models.DataArray(data)
             if(headers) {
                 if(Array.isArray(headers)) {
@@ -36,7 +56,7 @@ export namespace Controller {
             };
         }
 
-        setHeaderTitle(header:string | Type.Option, title?: string): void {
+        setHeaderTitle(header:string | Type.ObjString, title?: string): void {
             if(typeof header === "object" && header !== null) {
                 for(const key in header) { //Garantir a consistência de todas as chaves.
                     if(!this.data.isHeaderKey(key)) throw new Error;
@@ -67,75 +87,84 @@ export namespace Controller {
             this.data.setRender(headers);
         }
 
-        get headers() {
-            const key_title: Type.Option = {};
+        get headers(): Type.Headers {
+            return this.data.headers;
+        }
+
+        get render_titles(): Type.ObjString {
+            const key_title: Type.ObjString = {};
             this.data.getRenderKeys().forEach(key => {
                 key_title[key] = this.data.headers[key].title;
             })
             return key_title;
         }
 
-        get data_array() {
+        get data_array(): Type.JsonArray {
             return this.data.data
         }
 
-        get keys() {
+        get keys(): string[] {
             return this.data.keys
         }
-    }
 
+        get render_keys() {
+            return this.data.getRenderKeys();
+        }
+
+        get class() {
+            return this.data;
+        }
+    }
+    */
+
+    //Render Talvez Continue
     class Render {
-        private readonly target: HTMLElement
+        private readonly target: HTMLTableElement
         private html_table: Renderer.TableHtml
 
         constructor(target: HTMLElement) {
-            target.innerText = "";
+            if(target instanceof HTMLTableElement) {
+                target.innerText = "";
+                this.target = target;
+            } else {
+                target.innerText = "";
+                const table = document.createElement('table');
+                target.appendChild(table);
+                this.target = table;
+            }
             this.html_table = new Renderer.TableHtml();
-            this.target = target;
         }
 
-        renderTable(data: Type.Option[], headers: string[]) {
-            const fragment = this.html_table.startRender(data, headers);
+        renderTable(rows: Type.ObjString[], headers: Type.ObjString) {
+            const fragment = this.html_table.startRender(rows, headers);
             this.target.innerText = "";
             this.target.appendChild(fragment);
         }
 
-        renderTBody(rows: Type.Option[], columns: string[]) {
+        tableHead(columns: Type.ObjString) {
 
         }
 
-        composeFormateStringRows(data: Type.JsonArray, keys: string[]): Type.Option[] {
-            const result: Type.Option[] = [];
+        tableBody(rows: Type.ObjString[], columns: string[]) {
+
+        }
+
+        composeFormatedStringRows(data: Type.JsonArray, render_keys: string[], headers: Type.Headers): Type.ObjString[] {
+            const result: Type.ObjString[] = [];
             data.forEach(item => {
-                const row: Type.Option = {}
-                keys.forEach(column => {
-                    let value =  Utils.Common.getNestedProperty(item, column);
-                    value = this.formatValueAsString(value);
-                    row[column] = String(value);
+                const row: Type.ObjString = {}
+                render_keys.forEach(column => {
+                    let value =  Utils.Data.getNestedProperty(item, column);
+                    value = Utils.Format.valueTo(value, headers[column].format_to)
+                    row[column] = value;
                     })
                 result.push(row);
             })
-            console.log(result);
             return result;
         }
 
-        formatValueAsString<T>(value:T): string {
-            if (value === undefined) { return "not found" }
-            if (value === null) { return "null" }
-            if (value === "") { return "empty" }
-
-            const arr: Type.Primitive[] = [];
-            if(Array.isArray(value)) {
-                value.forEach(val => {
-                    if(typeof val === "object" && val !== null) {
-                        arr.push("{...}");
-                    } else {
-                        arr.push(this.formatValueAsString(val));
-                    }
-                })
-                return Utils.Format.resumeArrayContent(arr);
-            }
-            return Utils.Format.resumeString(String(value));
+        get html_class() {
+            return this.html_table;
         }
     }
 }
