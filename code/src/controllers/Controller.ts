@@ -1,6 +1,7 @@
 import { Type } from "../utils/Types.js";
 import { Models } from "../models/Models.js";
 import { Renderer } from "../views/Renderer.js";
+import { Utils } from "../utils/Utils.js";
 
 export namespace Controller {
     export class Main {
@@ -14,11 +15,13 @@ export namespace Controller {
         }
 
         renderTable() {
-            this.render.renderTable(this.data.data_array, this.data.headers);
+            const headers = this.data.headers
+            const rows = this.render.composeFormateStringRows(this.data.data_array, Object.keys(headers))
+            this.render.renderTable(rows, Object.keys(headers));
         }
     }
 
-    export class Data {
+    class Data {
         private data: Models.DataArray;
         
         constructor(data: Type.JsonArray, headers?: string[] | Type.Option) {
@@ -75,9 +78,13 @@ export namespace Controller {
         get data_array() {
             return this.data.data
         }
+
+        get keys() {
+            return this.data.keys
+        }
     }
 
-    export class Render {
+    class Render {
         private readonly target: HTMLElement
         private html_table: Renderer.TableHtml
 
@@ -87,11 +94,48 @@ export namespace Controller {
             this.target = target;
         }
 
-        renderTable(data: Type.JsonArray, headers: Type.Option) {
+        renderTable(data: Type.Option[], headers: string[]) {
             const fragment = this.html_table.startRender(data, headers);
             this.target.innerText = "";
             this.target.appendChild(fragment);
         }
 
+        renderTBody(rows: Type.Option[], columns: string[]) {
+
+        }
+
+        composeFormateStringRows(data: Type.JsonArray, keys: string[]): Type.Option[] {
+            const result: Type.Option[] = [];
+            data.forEach(item => {
+                const row: Type.Option = {}
+                keys.forEach(column => {
+                    let value =  Utils.Common.getNestedProperty(item, column);
+                    value = this.formatValueAsString(value);
+                    row[column] = String(value);
+                    })
+                result.push(row);
+            })
+            console.log(result);
+            return result;
+        }
+
+        formatValueAsString<T>(value:T): string {
+            if (value === undefined) { return "not found" }
+            if (value === null) { return "null" }
+            if (value === "") { return "empty" }
+
+            const arr: Type.Primitive[] = [];
+            if(Array.isArray(value)) {
+                value.forEach(val => {
+                    if(typeof val === "object" && val !== null) {
+                        arr.push("{...}");
+                    } else {
+                        arr.push(this.formatValueAsString(val));
+                    }
+                })
+                return Utils.Format.resumeArrayContent(arr);
+            }
+            return Utils.Format.resumeString(String(value));
+        }
     }
 }

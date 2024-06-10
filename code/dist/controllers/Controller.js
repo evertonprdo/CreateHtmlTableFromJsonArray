@@ -1,5 +1,6 @@
 import { Models } from "../models/Models.js";
 import { Renderer } from "../views/Renderer.js";
+import { Utils } from "../utils/Utils.js";
 export var Controller;
 (function (Controller) {
     class Main {
@@ -11,7 +12,9 @@ export var Controller;
             this.renderTable();
         }
         renderTable() {
-            this.render.renderTable(this.data.data_array, this.data.headers);
+            const headers = this.data.headers;
+            const rows = this.render.composeFormateStringRows(this.data.data_array, Object.keys(headers));
+            this.render.renderTable(rows, Object.keys(headers));
         }
     }
     Controller.Main = Main;
@@ -75,8 +78,10 @@ export var Controller;
         get data_array() {
             return this.data.data;
         }
+        get keys() {
+            return this.data.keys;
+        }
     }
-    Controller.Data = Data;
     class Render {
         target;
         html_table;
@@ -90,6 +95,45 @@ export var Controller;
             this.target.innerText = "";
             this.target.appendChild(fragment);
         }
+        renderTBody(rows, columns) {
+        }
+        composeFormateStringRows(data, keys) {
+            const result = [];
+            data.forEach(item => {
+                const row = {};
+                keys.forEach(column => {
+                    let value = Utils.Common.getNestedProperty(item, column);
+                    value = this.formatValueAsString(value);
+                    row[column] = String(value);
+                });
+                result.push(row);
+            });
+            console.log(result);
+            return result;
+        }
+        formatValueAsString(value) {
+            if (value === undefined) {
+                return "not found";
+            }
+            if (value === null) {
+                return "null";
+            }
+            if (value === "") {
+                return "empty";
+            }
+            const arr = [];
+            if (Array.isArray(value)) {
+                value.forEach(val => {
+                    if (typeof val === "object" && val !== null) {
+                        arr.push("{...}");
+                    }
+                    else {
+                        arr.push(this.formatValueAsString(val));
+                    }
+                });
+                return Utils.Format.resumeArrayContent(arr);
+            }
+            return Utils.Format.resumeString(String(value));
+        }
     }
-    Controller.Render = Render;
 })(Controller || (Controller = {}));

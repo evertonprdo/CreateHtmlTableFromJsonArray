@@ -9,6 +9,7 @@ const main = new Controller.Main(
             .then(data => { return data.products })
         )
     })(), {
+    "reviews[]":"Reviews[]",
     "title": "Titulo",
     "category": "Categoria",
     "price": "Preço",

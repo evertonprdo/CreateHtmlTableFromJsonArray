@@ -1,4 +1,3 @@
-import { Utils } from "../utils/Utils.js";
 export var Renderer;
 (function (Renderer) {
     class TableHtml {
@@ -10,7 +9,7 @@ export var Renderer;
         }
         startRender(data, headers) {
             this.table.append(this.createThead(headers));
-            this.table.append(this.renderTbody(data, headers));
+            this.table.append(this.renderTableBody(data, headers));
             this.fragment.append(this.table);
             return this.fragment;
         }
@@ -33,13 +32,13 @@ export var Renderer;
             return thead;
         }
         ;
-        renderTbody(data, headers) {
+        renderTableBody(rows, columns) {
             const tbody = document.createElement('tbody');
-            data.forEach(row => {
+            rows.forEach(row => {
                 const tr = document.createElement('tr');
-                Object.keys(headers).forEach(key => {
+                columns.forEach(column => {
                     const td = document.createElement('td');
-                    td.innerText = Utils.Common.getNestedProperty(row, key);
+                    td.innerText = row[column];
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);

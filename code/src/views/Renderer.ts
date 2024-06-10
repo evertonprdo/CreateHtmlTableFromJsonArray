@@ -12,9 +12,9 @@ export namespace Renderer {
             this.table = document.createElement('table');
         }
 
-        startRender(data: Type.JsonArray, headers: Type.Option): DocumentFragment {
+        startRender(data: Type.Option[], headers: string[]): DocumentFragment {
             this.table.append(this.createThead(headers));
-            this.table.append(this.renderTbody(data, headers));
+            this.table.append(this.renderTableBody(data, headers));
             this.fragment.append(this.table);
             //this.renderTfoot();
             return this.fragment;
@@ -39,13 +39,13 @@ export namespace Renderer {
             return thead;
         };
 
-        private renderTbody(data:Type.JsonArray, headers: Type.Option): HTMLTableSectionElement {
+        renderTableBody(rows: Type.Option[], columns: string[]): HTMLTableSectionElement {
             const tbody = document.createElement('tbody');
-            data.forEach(row => {
+            rows.forEach(row => {
                 const tr = document.createElement('tr');
-                Object.keys(headers).forEach(key => {
+                columns.forEach(column => {
                     const td = document.createElement('td');
-                    td.innerText = Utils.Common.getNestedProperty(row, key);
+                    td.innerText = row[column];
                     tr.appendChild(td);
                 })
                 tbody.appendChild(tr);
