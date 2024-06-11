@@ -19,4 +19,10 @@ export namespace Type {
     }
 
     export type FormatTo = "DATE" | "CURRENCY" | "FLOAT_FIX" | "PERCENT" | "default"
+
+    export type DataRow = {
+        "id": number
+        "row": JsonObject
+        "render": boolean,
+    }
 }

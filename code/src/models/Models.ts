@@ -3,55 +3,67 @@ import { Utils } from "../utils/Utils.js";
 
 export namespace Models {
     export class JsonArray {
-        private readonly data_json_array: Type.JsonArray;
-        private readonly headers_json_array: Type.Headers;
+        private readonly class_data: Data;
+        private readonly class_headers: Headers;
 
         constructor(data:Type.JsonArray) {
-            this.data_json_array = data;
-            let headers: Type.Headers = {} as Type.Headers;
-            Utils.Data.getKeysFromJsonObject(data[0]).forEach(key => {
-                headers[key] = {
-                    "render": true,
-                    "title": key,
-                    "format_to": "default",
-                }
-            });
-            this.headers_json_array = headers;
+            this.class_data = new Data(data);
+            this.class_headers = new Headers(Utils.Data.getKeysFromJsonObject(data[0]));
         }
 
-        isHeaderKey(key: string): boolean {
+        get Data(): Data {
+            return this.class_data;
+        }
+
+        get Headers(): Headers {
+            return this.class_headers;
+        }
+    }
+
+    class Headers {
+        private readonly object_headers: Type.Headers
+
+        constructor(keys: string[]) {
+            const headers: Type.Headers = {};
+            for(const key of keys) {
+                headers[key] = {
+                    "title": key,
+                    "render": true,
+                    "format_to": "default"
+                }
+            }
+            this.object_headers = headers
+        }
+
+        isKey(key: string): boolean {
             return key in this.headers;
         }
 
         switchRender(key:string): void {
-            if(!this.isHeaderKey(key)) this.keyNotFound(key);
+            if(!this.isKey(key)) this.keyNotFound(key);
             this.headers[key].render = !this.headers[key].render;
         }
 
-        popHeader(key:string): void {
-            if(!this.isHeaderKey(key)) this.keyNotFound(key);
+        pop(key:string): void {
+            if(!this.isKey(key)) this.keyNotFound(key);
             if(this.headers[key].render === true) this.switchRender(key);
         }
 
-        pushHeader(key:string): void {
-            if(!this.isHeaderKey(key)) this.keyNotFound(key);
+        push(key:string): void {
+            if(!this.isKey(key)) this.keyNotFound(key);
             if(this.headers[key].render === false) this.switchRender(key);
         }
 
         // ---------------------- Getters ---------------------- //
 
-        get array(): Type.JsonArray {
-            return this.data_json_array;
-        }
-        
-        get headers(): Type.Headers {
-            return this.headers_json_array;
+        get headers() {
+            return this.object_headers;
         }
 
-        get render_headers(): Type.Headers {
+        getRender(bol = true): Type.Headers {
             const render: Type.Headers = {};
             Object.keys(this.headers).forEach(key => {
-                if(this.headers[key].render === true)
+                if(this.headers[key].render === bol)
                 render[key] = this.headers[key];
             })
             return render;
@@ -61,8 +73,8 @@ export namespace Models {
             return Object.keys(this.headers);
         }
 
-        get render_keys(): string[] {
-            return Object.keys(this.render_headers);
+        getRenderKeys(bol = true): string[] {
+            return Object.keys(this.getRender(bol));
         }
 
         get titles(): Type.ObjString {
@@ -73,15 +85,15 @@ export namespace Models {
             return result
         }
 
-        get render_titles(): Type.ObjString {
+        getRenderTitles(bol = true): Type.ObjString {
             const result: Type.ObjString = {};
-            for(const key in this.render_headers) {
+            for(const key in this.getRender(bol)) {
                 result[key] = this.headers[key].title
             }
             return result
         }
 
-        get format(): Type.ObjString {
+        get format_to(): Type.ObjString {
             const result: Type.ObjString = {}
             this.keys.forEach(key => {
                 result[key] = this.headers[key].format_to;
@@ -91,7 +103,7 @@ export namespace Models {
 
         get render_format(): Type.ObjString {
             const result: Type.ObjString = {};
-            for(const key in this.render_headers) {
+            for(const key in this.getRender()) {
                 result[key] = this.headers[key].format_to
             }
             return result
@@ -99,54 +111,54 @@ export namespace Models {
 
         // ---------------------- Setters ---------------------- //
 
-        setHeaderRender(headers: string[]): void {
-            for(const key of headers) { if(!this.isHeaderKey(key)) this.keyNotFound(key); }
+        setRender(headers: string[]): void {
+            for(const key of headers) { if(!this.isKey(key)) this.keyNotFound(key); }
             this.keys.forEach(key => {
                 if(headers.includes(key)) {
-                    this.pushHeader(key);
+                    this.push(key);
                 } else {
-                    this.popHeader(key);
+                    this.pop(key);
                 }
             })
         }
 
-        private setHeaderTitleProperty(key: string, title: string): void {
-            if(!this.isHeaderKey(key)) this.keyNotFound(key)
+        private setTitleProperty(key: string, title: string): void {
+            if(!this.isKey(key)) this.keyNotFound(key)
             this.headers[key].title = title;
         }
 
-        setHeaderTitle(header:string | Type.ObjString, title?: string): void {
+        setTitle(header:string | Type.ObjString, title?: string): void {
             if(typeof header === "object" && header !== null) {
                 for(const key in header) {
-                    if(!this.isHeaderKey(key)) this.keyNotFound(key);
+                    if(!this.isKey(key)) this.keyNotFound(key);
                 }
                 for (const key in header) {
-                    this.setHeaderTitleProperty(key, header[key]);
+                    this.setTitleProperty(key, header[key]);
                 }
             } else if(typeof header === "string" && title) {
-                if(!this.isHeaderKey(header)) this.keyNotFound(header);
-                this.setHeaderTitleProperty(header, title);
+                if(!this.isKey(header)) this.keyNotFound(header);
+                this.setTitleProperty(header, title);
             } else {
                 throw new Error(`Os titulos não foram definidos para: "${header}", "${title}"`)
             }
         }
 
-        private setHeaderFormatToProperty(key:string, type: Type.FormatTo): void {
-            if(!this.isHeaderKey(key)) this.keyNotFound(key);
+        private setFormatToProperty(key:string, type: Type.FormatTo): void {
+            if(!this.isKey(key)) this.keyNotFound(key);
             this.headers[key].format_to = type;
         }
 
         setFormatTo(header:string | {[prop:string]: Type.FormatTo}, type?: Type.FormatTo): void {
             if(typeof header === "object" && header !== null) {
                 for(const key in header) {
-                    if(!this.isHeaderKey(key)) this.keyNotFound(key);
+                    if(!this.isKey(key)) this.keyNotFound(key);
                 }
                 for (const key in header) {
-                    this.setHeaderFormatToProperty(key, header[key]);
+                    this.setFormatToProperty(key, header[key]);
                 }
             } else if(typeof header === "string" && type) {
-                if(!this.isHeaderKey(header)) this.keyNotFound(header);
-                this.setHeaderFormatToProperty(header, type);
+                if(!this.isKey(header)) this.keyNotFound(header);
+                this.setFormatToProperty(header, type);
             } else {
                 throw new Error(`formatTo não foram definidos para: "${header}", "${type}"`)
             }
@@ -156,6 +168,90 @@ export namespace Models {
 
         private keyNotFound(key:string) {
             throw new Error(`"${key}" Not Found`)
+        }
+    }
+
+    class Data {
+        private readonly data_json_array: Type.DataRow[]
+        
+        constructor(data: Type.JsonArray) {
+            const arr = []
+            for (let i = 0; i < data.length; i++) {
+                const data_item = {
+                    "id": i,
+                    "row": data[i],
+                    "render": true
+                }
+                arr.push(data_item);
+            }
+            this.data_json_array = arr
+        }
+
+        isId(id: number): boolean {           
+            return (this.data.length >= id && id >= 0);
+        }
+
+        switchRender(id: number): void {
+            if(!this.isId(id)) this.IdNotFound(id);
+            this.data[id].render = !this.data[id].render;
+        }
+
+        pop(id: number): void {
+            if(!this.isId(id)) this.IdNotFound(id);
+            if(this.data[id].render === true) { 
+                this.switchRender(id); 
+            }
+        }
+
+        push(id: number): void {
+            if(!this.isId(id)) this.IdNotFound(id);
+            if(this.data[id].render === false) this.switchRender(id);
+        }
+
+        // ---------------------- Getters ---------------------- //
+
+        get data(): Type.DataRow[] {
+            return this.data_json_array;
+        }
+
+        get array(): Type.JsonArray {
+            const result: Type.JsonArray = []
+            this.data.forEach(item => {
+                let row = item.row
+                result.push(row);
+            })
+            return result;
+        }
+
+        getRenderArray(bol = true): Type.JsonArray {
+            const result: Type.JsonArray = [];
+            this.data.forEach(item => {
+                if(item.render === bol) {
+                    result.push(item.row);
+                }
+            })
+            return result
+        }
+
+        // ---------------------- Setters ---------------------- //
+
+        setRender(ids: number[]): void {
+            for(const id of ids) {
+                if(!this.isId(id)) { this.IdNotFound(id); }
+            }
+            for (let i = 0; i < this.data.length; i++) {
+                if(ids.includes(this.data[i].id)) {
+                    this.push(this.data[i].id)
+                } else {
+                    this.pop(this.data[i].id)
+                }
+            }
+        }
+
+        // ---------------------- Message ---------------------- //
+
+        private IdNotFound(id: number) {
+            throw new Error(`Row: "${id}" Not Found`)
         }
     }
 

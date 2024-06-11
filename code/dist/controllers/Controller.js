@@ -10,11 +10,11 @@ export var Controller;
             this.json_array_class = new Models.JsonArray(json_array);
             if (headers) {
                 if (Array.isArray(headers)) {
-                    this.JsonArray.setHeaderRender(headers);
+                    this.JsonArray.Headers.setRender(headers);
                 }
                 else {
-                    this.JsonArray.setHeaderTitle(headers);
-                    this.JsonArray.setHeaderRender(Object.keys(headers));
+                    this.JsonArray.Headers.setTitle(headers);
+                    this.JsonArray.Headers.setRender(Object.keys(headers));
                 }
             }
             ;
@@ -22,8 +22,8 @@ export var Controller;
             this.startTable();
         }
         startTable() {
-            const rows = this.Compose.tableBody(this.JsonArray.array, this.JsonArray.render_headers);
-            this.RendererHtmlTable.startRender(rows, this.JsonArray.render_titles);
+            const rows = this.Compose.tableBody(this.JsonArray.Data.getRenderArray(), this.JsonArray.Headers.getRender());
+            this.RendererHtmlTable.startRender(rows, this.JsonArray.Headers.getRenderTitles());
         }
         get JsonArray() {
             return this.json_array_class;
@@ -35,26 +35,31 @@ export var Controller;
             return this.compose_data_class;
         }
         logTests() {
-            this.JsonArray.setHeaderTitle("meta.createdAt", "Criado em");
-            this.JsonArray.popHeader("meta.createdAt");
-            this.JsonArray.popHeader("meta.updatedAt");
-            this.JsonArray.switchRender("description");
-            this.JsonArray.setHeaderTitle("description", "Descrição");
-            this.JsonArray.setHeaderTitle({
+            this.JsonArray.Headers.setTitle("meta.createdAt", "Criado em");
+            this.JsonArray.Headers.pop("meta.createdAt");
+            this.JsonArray.Headers.pop("meta.updatedAt");
+            this.JsonArray.Headers.switchRender("description");
+            this.JsonArray.Headers.setTitle("description", "Descrição");
+            this.JsonArray.Headers.setTitle({
                 "thumbnail": "Imagem Principal",
                 "dimensions.depth": "Comprimento",
                 "dimensions.width": "Largura",
                 "dimensions.height": "Altura"
             });
-            this.JsonArray.setHeaderRender(["title", "description", "stock", "price"]);
-            this.JsonArray.setFormatTo("price", "CURRENCY");
-            this.JsonArray.setFormatTo({
+            this.JsonArray.Headers.setRender(["title", "description", "stock", "price"]);
+            this.JsonArray.Headers.setFormatTo("price", "CURRENCY");
+            this.JsonArray.Headers.setFormatTo({
                 "meta.createdAt": "DATE",
                 "meta.updatedAt": "DATE",
                 "discountPercentage": "PERCENT",
                 "weight": "FLOAT_FIX"
             });
-            console.log(this.JsonArray);
+            this.JsonArray.Data.setRender([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            this.JsonArray.Data.push(15);
+            this.JsonArray.Data.switchRender(3);
+            console.log(this.JsonArray.Data.getRenderArray());
+            console.log(this.JsonArray.Headers.headers);
+            console.log(this.JsonArray.Data.data);
         }
     }
     Controller.Main = Main;
