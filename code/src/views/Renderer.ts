@@ -2,22 +2,33 @@ import { Type } from "../utils/Types.js";
 
 export namespace Renderer {
     export class TableHtml {
+        private readonly html_table: HTMLTableElement;
         private readonly html_thead: HTMLTableSectionElement;
         private readonly html_tbody: HTMLTableSectionElement;
         
         private fragment: DocumentFragment;
 
-        constructor() {
+        constructor(target: HTMLElement) {
             this.fragment = document.createDocumentFragment();
             this.html_thead = document.createElement('thead');
             this.html_tbody = document.createElement('tbody');
+
+            if(target instanceof HTMLTableElement) {
+                target.innerText = "";
+                this.html_table = target;
+            } else {
+                target.innerText = "";
+                const table = document.createElement('table');
+                target.appendChild(table);
+                this.html_table = table;
+            }
         }
 
-        startRender(data: Type.ObjString[], headers: Type.ObjString): DocumentFragment {
+        startRender(data: Type.ObjString[], headers: Type.ObjString): void {
             this.createThead(headers);
             this.createTableBody(data, Object.keys(headers));
             this.fragment.append(this.thead, this.tbody);
-            return this.fragment;
+            this.html_table.appendChild(this.fragment);
         }
 
         private createThead(headers: Type.ObjString): HTMLTableSectionElement {

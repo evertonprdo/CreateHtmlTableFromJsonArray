@@ -1,80 +1,61 @@
 import { Models } from "../models/Models.js";
 import { Renderer } from "../views/Renderer.js";
-import { Utils } from "../utils/Utils.js";
 export var Controller;
 (function (Controller) {
     class Main {
-        data;
-        render;
-        constructor(target, data, headers) {
-            this.data = new Models.DataArray(data);
-            this.render = new Render(target);
+        json_array_class;
+        compose_data_class = new Models.Compose();
+        html_table_renderer_class;
+        constructor(target, json_array, headers) {
+            this.json_array_class = new Models.JsonArray(json_array);
             if (headers) {
                 if (Array.isArray(headers)) {
-                    this.data.setRender(headers);
+                    this.JsonArray.setHeaderRender(headers);
                 }
                 else {
-                    this.data.setTitles(headers);
-                    this.data.setRender(Object.keys(headers));
+                    this.JsonArray.setHeaderTitle(headers);
+                    this.JsonArray.setHeaderRender(Object.keys(headers));
                 }
             }
             ;
+            this.html_table_renderer_class = new Renderer.TableHtml(target);
             this.startTable();
         }
         startTable() {
-            const rows = this.render.composeFormatedStringRows(this.data_class.array, this.data.keys, this.data.headers);
-            this.render.tableBody(rows, this.data.keys);
-            this.render.tableHead(this.data.render_titles);
-            this.render.renderTable(rows, this.data.render_titles);
+            const rows = this.Compose.tableBody(this.JsonArray.array, this.JsonArray.render_headers);
+            this.RendererHtmlTable.startRender(rows, this.JsonArray.render_titles);
         }
-        get data_class() {
-            return this.data;
+        get JsonArray() {
+            return this.json_array_class;
         }
-        get render_class() {
-            return this.render;
+        get RendererHtmlTable() {
+            return this.html_table_renderer_class;
+        }
+        get Compose() {
+            return this.compose_data_class;
+        }
+        logTests() {
+            this.JsonArray.setHeaderTitle("meta.createdAt", "Criado em");
+            this.JsonArray.popHeader("meta.createdAt");
+            this.JsonArray.popHeader("meta.updatedAt");
+            this.JsonArray.switchRender("description");
+            this.JsonArray.setHeaderTitle("description", "Descrição");
+            this.JsonArray.setHeaderTitle({
+                "thumbnail": "Imagem Principal",
+                "dimensions.depth": "Comprimento",
+                "dimensions.width": "Largura",
+                "dimensions.height": "Altura"
+            });
+            this.JsonArray.setHeaderRender(["title", "description", "stock", "price"]);
+            this.JsonArray.setFormatTo("price", "CURRENCY");
+            this.JsonArray.setFormatTo({
+                "meta.createdAt": "DATE",
+                "meta.updatedAt": "DATE",
+                "discountPercentage": "PERCENT",
+                "weight": "FLOAT_FIX"
+            });
+            console.log(this.JsonArray);
         }
     }
     Controller.Main = Main;
-    class Render {
-        target;
-        html_table;
-        constructor(target) {
-            if (target instanceof HTMLTableElement) {
-                target.innerText = "";
-                this.target = target;
-            }
-            else {
-                target.innerText = "";
-                const table = document.createElement('table');
-                target.appendChild(table);
-                this.target = table;
-            }
-            this.html_table = new Renderer.TableHtml();
-        }
-        renderTable(rows, headers) {
-            const fragment = this.html_table.startRender(rows, headers);
-            this.target.innerText = "";
-            this.target.appendChild(fragment);
-        }
-        tableHead(columns) {
-        }
-        tableBody(rows, columns) {
-        }
-        composeFormatedStringRows(data, render_keys, headers) {
-            const result = [];
-            data.forEach(item => {
-                const row = {};
-                render_keys.forEach(column => {
-                    let value = Utils.Data.getNestedProperty(item, column);
-                    value = Utils.Format.valueTo(value, headers[column].format_to);
-                    row[column] = value;
-                });
-                result.push(row);
-            });
-            return result;
-        }
-        get html_class() {
-            return this.html_table;
-        }
-    }
 })(Controller || (Controller = {}));
