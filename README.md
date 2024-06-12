@@ -15,8 +15,8 @@ Obs: Cabeçalho quando omitido usara a primeira linha como referência.
 
  ### A "versão 1.0" se comprote a:
  - [ ] Desenvolver uma base de código modular e escalável.
- - [ ] Receber o JSON Array, construir e renderizar a tabela HTML.
- - [ ] Ordenar a tabela pelo cabeçalho.
- - [ ] Rodapé com função columnSum().
+ - [x] Receber o JSON Array, construir e renderizar a tabela HTML.
+ - [x] Ordenar a tabela pelo cabeçalho.
+ - [x] Rodapé com função columnSum().
 
 Atualmente o projeto está em desenvolvimento, exemplos serám adicionais quando estiver funcional, para acompanhar a usabilidade acesse ./code/src/index.ts
