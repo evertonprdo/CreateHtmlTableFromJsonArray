@@ -66,22 +66,22 @@ table tbody tr td {
       }
   */
 }
-table tfoot tr td {
+table tfoot tr td, table tfoot tr th {
   padding: 7px;
   padding: 10px;
   font-weight: bold;
   min-height: 30px;
 }
-table tfoot tr td:first-child {
+table tfoot tr td:first-child, table tfoot tr th:first-child {
   border-radius: 7px 0 0 0;
 }
-table tfoot tr td:last-child {
+table tfoot tr td:last-child, table tfoot tr th:last-child {
   border-radius: 0 7px 0 0;
 }
-table tfoot tr td:first-child {
+table tfoot tr td:first-child, table tfoot tr th:first-child {
   border-radius: 0 0 0 7px;
 }
-table tfoot tr td:last-child {
+table tfoot tr td:last-child, table tfoot tr th:last-child {
   border-radius: 0 0 7px 0;
 }
 

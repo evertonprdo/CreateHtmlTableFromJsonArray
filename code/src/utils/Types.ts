@@ -15,6 +15,7 @@ export namespace Type {
             title: string
             render: boolean
             format_to: FormatTo
+            is_column_sum: boolean
         }
     }
 

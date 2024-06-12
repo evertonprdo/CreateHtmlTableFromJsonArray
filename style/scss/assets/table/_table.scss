@@ -52,7 +52,7 @@
                 //@include layout.tr();
                 @include skin.tr($tfoot: true);
                 @include high.tr($tfoot: true);
-                td{
+                td, th {
                     @include layout.th($top: false);
                     @include skin.th();
                     @include high.th();

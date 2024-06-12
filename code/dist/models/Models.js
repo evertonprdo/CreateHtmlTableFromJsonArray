@@ -24,7 +24,8 @@ export var Models;
                 headers[key] = {
                     "title": key,
                     "render": true,
-                    "format_to": "default"
+                    "format_to": "default",
+                    "is_column_sum": false
                 };
             }
             this.object_headers = headers;
@@ -36,6 +37,11 @@ export var Models;
             if (!this.isKey(key))
                 this.keyNotFound(key);
             this.headers[key].render = !this.headers[key].render;
+        }
+        switchColumnSum(key) {
+            if (!this.isKey(key))
+                this.keyNotFound(key);
+            this.headers[key].is_column_sum = !this.headers[key].is_column_sum;
         }
         pop(key) {
             if (!this.isKey(key))
@@ -91,6 +97,15 @@ export var Models;
             const result = {};
             for (const key in this.getRender()) {
                 result[key] = this.headers[key].format_to;
+            }
+            return result;
+        }
+        get render_column_some() {
+            const result = [];
+            for (const key in this.getRender()) {
+                if (this.headers[key].is_column_sum) {
+                    result.push(key);
+                }
             }
             return result;
         }
@@ -264,6 +279,18 @@ export var Models;
         }
         tableHead(titles, headers) {
             return this.formatRowToString(titles, headers, false);
+        }
+        tableFoot(values, headers) {
+            const result = {};
+            for (const key in headers) {
+                if (Object.keys(values).includes(key)) {
+                    result[key] = String(Utils.Format.valueToFloat(values[key]));
+                }
+                else {
+                    result[key] = " - ";
+                }
+            }
+            return result;
         }
     }
     Models.Compose = Compose;

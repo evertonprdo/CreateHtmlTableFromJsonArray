@@ -1,12 +1,13 @@
 import { Type } from "../utils/Types.js";
 import { Models } from "../models/Models.js";
 import { Renderer } from "../views/Renderer.js";
+import { Utils } from "../utils/Utils.js";
 
 export namespace Controller {
     export class Main {
         private json_array_class: Models.JsonArray;
         private compose_data_class: Models.Compose = new Models.Compose();
-        private html_table_renderer_class: Renderer.TableHtml;
+        private table_html_class: Renderer.TableHtml;
 
         constructor(target: HTMLElement, json_array: Type.JsonArray, headers?: string[] | Type.ObjString) {
             this.json_array_class = new Models.JsonArray(json_array);
@@ -18,56 +19,146 @@ export namespace Controller {
                     this.JsonArray.Headers.setRender(Object.keys(headers));
                 }
             };
-            this.html_table_renderer_class = new Renderer.TableHtml(target);
-            this.startTable();
-        }
-
-        startTable() {                    
-            const rows = this.Compose.tableBody(this.JsonArray.Data.getRenderArray(), this.JsonArray.Headers.getRender());
-            this.RendererHtmlTable.startRender(rows, this.JsonArray.Headers.getRenderTitles());
+            this.table_html_class = new Renderer.TableHtml(target);
         }
 
         get JsonArray() {
             return this.json_array_class;
         }
 
-        get RendererHtmlTable() {
-            return this.html_table_renderer_class;
-        }
-
         get Compose() {
             return this.compose_data_class;
         }
 
-        logTests() {
-            this.JsonArray.Headers.setTitle("meta.createdAt", "Criado em");
-            this.JsonArray.Headers.pop("meta.createdAt")
-            this.JsonArray.Headers.pop("meta.updatedAt")
-            this.JsonArray.Headers.switchRender("description")
-            this.JsonArray.Headers.setTitle("description", "Descrição")
+        get TableHtml() {
+            return this.table_html_class;
+        }
+    }
 
-            this.JsonArray.Headers.setTitle({
-                "thumbnail": "Imagem Principal",
-                "dimensions.depth": "Comprimento",
-                "dimensions.width": "Largura",
-                "dimensions.height": "Altura"
+    export class EventManager extends EventTarget {
+        private readonly main_class: Main
+        private temp_order_key: string = "";
+        
+        constructor(controller: Main) {
+            super();
+            this.main_class = controller;
+            this.start();
+        }
+
+        start() {
+            this.options();
+            this.Main.TableHtml.init(
+                this.Main.Compose.tableBody(
+                    this.Main.JsonArray.Data.getRenderArray(),
+                    this.Main.JsonArray.Headers.getRender(),
+                ), 
+                this.Main.JsonArray.Headers.getRenderTitles(),
+                this.footerSome()
+            )
+            this.Main.TableHtml.addEventListener('headerClick', (event) => {
+                this.headerClick((event as CustomEvent).detail);
             })
+        }
 
-            this.JsonArray.Headers.setRender(["title", "description", "stock", "price"])
-            this.JsonArray.Headers.setFormatTo("price", "CURRENCY");
-            this.JsonArray.Headers.setFormatTo({
-                "meta.createdAt": "DATE",
-                "meta.updatedAt": "DATE",
-                "discountPercentage": "PERCENT",
-                "weight": "FLOAT_FIX"
-            })
-            this.JsonArray.Data.setRender([0,1,2,3,4,5,6,7,8,9,10])
-            this.JsonArray.Data.push(15)
-            this.JsonArray.Data.switchRender(3);
+        footerSome() {
+            const result: {[key: string]: number} = {};
+            const som = this.Main.JsonArray.Headers.render_column_some
+            for(const key of som) {
+                let soma = 0;
+                this.Main.JsonArray.Data.getRenderArray().forEach(item => {
+                    soma += Utils.Data.getNestedProperty(item, key) as number;
+                })
+                result[key] = soma;
+            }
 
-            console.log(this.JsonArray.Data.getRenderArray());
-            console.log(this.JsonArray.Headers.headers);
-            console.log(this.JsonArray.Data.data);
+            return this.Main.Compose.tableFoot(result, this.Main.JsonArray.Headers.getRender())
+        }
+
+        refreshTableBody(teste?: any) {
+            this.Main.TableHtml.refreshBody(
+                teste,
+                this.Main.JsonArray.Headers.getRenderKeys()
+            );
+        }
+
+        private headerClick(key: string) {
+            this.refreshTableBody(
+                this.Main.Compose.tableBody(
+                    this.sortByHeader(
+                        this.Main.JsonArray.Data.getRenderArray(),
+                        key
+                    ),
+                    this.Main.JsonArray.Headers.getRender()
+                )
+            );
+        }
+
+        private sortByHeader(table: Type.JsonArray, key: string): Type.JsonArray {
+            const ord: number[] = []
+            if(this.temp_order_key === key) {
+                this.temp_order_key = "";
+                ord.push(1, -1);
+            } else {
+                this.temp_order_key = key;
+                ord.push(-1, 1);
+            }
+            return table.sort((a, b) => {
+                const value_a = Utils.Data.getNestedProperty(a, key);
+                const value_b = Utils.Data.getNestedProperty(b, key);
+                if(value_a && value_b) {
+                    if (value_a < value_b) {
+                        return ord[0];
+                    }
+                    if (value_a > value_b) {
+                        return ord[1];
+                    }
+                }
+                return 0;
+            });
+        }
+
+        // Adminstração da tabela, temporariamente para testar os recursos.
+        options() {
+            this.Main.JsonArray.Headers.setRender(
+                [
+                    "title",
+                    "description",
+                    "discountPercentage",
+                    "dimensions.width",
+                    "dimensions.height",
+                    "dimensions.depth",
+                    "price",
+                    "meta.createdAt"
+                ]
+            )
+            this.Main.JsonArray.Headers.setTitle(
+                {
+                    "title": "Titulo",
+                    "description": "Descrição",
+                    "discountPercentage": "Desconto",
+                    "price": "Preço",
+                    "dimensions.width": "Largura",
+                    "dimensions.height": "Altura",
+                    "dimensions.depth": "Comprimento",
+                    "meta.createdAt": "Criando em"
+                }
+            )
+            this.Main.JsonArray.Headers.setFormatTo(
+                {
+                    "price": "CURRENCY",
+                    "meta.createdAt": "DATE",
+                    "discountPercentage": "PERCENT",
+                    "weight": "FLOAT_FIX"
+                }
+            )
+            this.Main.JsonArray.Headers.switchColumnSum("dimensions.width")
+            this.Main.JsonArray.Headers.switchColumnSum("dimensions.height")
+            this.Main.JsonArray.Headers.switchColumnSum("dimensions.depth")
+            this.Main.JsonArray.Data.setRender([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
+        }
+
+        get Main() {
+            return this.main_class
         }
     }
 }

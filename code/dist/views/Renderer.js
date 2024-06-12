@@ -1,14 +1,17 @@
 export var Renderer;
 (function (Renderer) {
-    class TableHtml {
+    class TableHtml extends EventTarget {
         html_table;
         html_thead;
         html_tbody;
+        html_tfoot;
         fragment;
         constructor(target) {
+            super();
             this.fragment = document.createDocumentFragment();
             this.html_thead = document.createElement('thead');
             this.html_tbody = document.createElement('tbody');
+            this.html_tfoot = document.createElement('tfoot');
             if (target instanceof HTMLTableElement) {
                 target.innerText = "";
                 this.html_table = target;
@@ -20,11 +23,15 @@ export var Renderer;
                 this.html_table = table;
             }
         }
-        startRender(data, headers) {
+        init(data, headers, footers) {
             this.createThead(headers);
+            this.createTfoot(footers);
             this.createTableBody(data, Object.keys(headers));
-            this.fragment.append(this.thead, this.tbody);
-            this.html_table.appendChild(this.fragment);
+            this.html_table.append(this.thead, this.tbody, this.tfoot);
+        }
+        refreshBody(rows, columns) {
+            this.tbody.innerText = '';
+            this.createTableBody(rows, columns);
         }
         createThead(headers) {
             const tr = document.createElement('tr');
@@ -34,10 +41,10 @@ export var Renderer;
                 th.innerText = headers[key];
                 tr.appendChild(th);
             });
-            this.thead.addEventListener('click', function (event) {
+            this.thead.addEventListener('click', (event) => {
                 if (event.target !== null) {
-                    const click = event.target.dataset.eventTracker;
-                    console.log(click);
+                    const column_key = event.target.dataset.eventTracker;
+                    this.dispatchEvent(new CustomEvent('headerClick', { detail: column_key }));
                 }
             });
             this.thead.appendChild(tr);
@@ -56,11 +63,28 @@ export var Renderer;
             });
             return this.tbody;
         }
+        createTfoot(headers) {
+            const tr = document.createElement('tr');
+            Object.keys(headers).forEach(key => {
+                const th = document.createElement('th');
+                th.innerText = headers[key];
+                tr.appendChild(th);
+            });
+            this.tfoot.appendChild(tr);
+            return this.thead;
+        }
+        ;
         get thead() {
             return this.html_thead;
         }
         get tbody() {
             return this.html_tbody;
+        }
+        get tfoot() {
+            return this.html_tfoot;
+        }
+        get table() {
+            return this.html_table;
         }
     }
     Renderer.TableHtml = TableHtml;

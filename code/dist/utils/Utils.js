@@ -79,7 +79,7 @@ export var Utils;
                     result = new Date(String(value)).toLocaleString();
                     break;
                 case "CURRENCY":
-                    result = Utils.Format.valueToFloat(value, 2).toLocaleString();
+                    result = "R$ " + Utils.Format.valueToFloat(value, 2).toLocaleString();
                     break;
                 case "PERCENT":
                     result = String(Utils.Format.valueToFloat(value, 1)) + "%";

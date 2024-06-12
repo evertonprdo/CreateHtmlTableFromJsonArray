@@ -7,4 +7,4 @@ const data_1 = await (async () => {
 })();
 const initial_headers_1 = ["reviews[]", "title", "category", "price", "discountPercentage", "rating", "stock", "brand", "meta.createdAt", "meta.updatedAt", "images[]"];
 const table_1 = new Controller.Main(target_1, data_1, initial_headers_1);
-table_1.logTests();
+const event_manager = new Controller.EventManager(table_1);

@@ -29,7 +29,8 @@ export namespace Models {
                 headers[key] = {
                     "title": key,
                     "render": true,
-                    "format_to": "default"
+                    "format_to": "default",
+                    "is_column_sum": false
                 }
             }
             this.object_headers = headers
@@ -44,6 +45,11 @@ export namespace Models {
             this.headers[key].render = !this.headers[key].render;
         }
 
+        switchColumnSum(key:string): void {
+            if(!this.isKey(key)) this.keyNotFound(key);
+            this.headers[key].is_column_sum = !this.headers[key].is_column_sum;
+        }
+
         pop(key:string): void {
             if(!this.isKey(key)) this.keyNotFound(key);
             if(this.headers[key].render === true) this.switchRender(key);
@@ -53,6 +59,8 @@ export namespace Models {
             if(!this.isKey(key)) this.keyNotFound(key);
             if(this.headers[key].render === false) this.switchRender(key);
         }
+
+
 
         // ---------------------- Getters ---------------------- //
 
@@ -105,6 +113,16 @@ export namespace Models {
             const result: Type.ObjString = {};
             for(const key in this.getRender()) {
                 result[key] = this.headers[key].format_to
+            }
+            return result
+        }
+
+        get render_column_some(): string[] {
+            const result: string[] = [];
+            for(const key in this.getRender()) {
+                if(this.headers[key].is_column_sum) {
+                    result.push(key);
+                }
             }
             return result
         }
@@ -286,6 +304,18 @@ export namespace Models {
 
         tableHead(titles: Type.ObjString, headers: Type.Headers): Type.ObjString {
             return this.formatRowToString(titles, headers, false)
+        }
+
+        tableFoot(values: {[key: string]: number}, headers: Type.Headers): Type.ObjString {
+            const result: Type.ObjString = {};
+            for(const key in headers) {
+                if(Object.keys(values).includes(key)) {
+                    result[key] = String(Utils.Format.valueToFloat(values[key]));
+                } else {
+                    result[key] = " - ";
+                }
+            }
+            return result;
         }
     }
 }

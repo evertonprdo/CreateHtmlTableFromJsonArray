@@ -13,4 +13,4 @@ const initial_headers_1 = ["reviews[]", "title", "category", "price", "discountP
 const table_1 = new Controller.Main(target_1, data_1, initial_headers_1)      // Colunas viziveis ao instanciar a classe.
 //const table_1 = new Controller.Data(target_1, data_1)                         // Todas as colunas visiveis ao instanciar a classe
 
-table_1.logTests()
+const event_manager = new Controller.EventManager(table_1);
