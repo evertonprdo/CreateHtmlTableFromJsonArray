@@ -1,22 +1,21 @@
-import { Type } from "../utils/Types.js";
-import { Models } from "../models/Models.js";
-import { Renderer } from "../views/Renderer.js";
-import { Utils } from "../utils/Utils.js";
+import { Type, Utils, Renderer, Models } from "../CreateTableFromJsonArray.js";
+import { TableDataSource } from "../models/TableDataSource.js";
 
 export namespace Controller {
     export class Main {
-        private json_array_class: Models.JsonArray;
+        private json_array_class: TableDataSource;
         private compose_data_class: Models.Compose = new Models.Compose();
         private table_html_class: Renderer.TableHtml;
 
-        constructor(target: HTMLElement, json_array: Type.JsonArray, headers?: string[] | Type.ObjString) {
-            this.json_array_class = new Models.JsonArray(json_array);
+        constructor(target: HTMLElement, json_array: Type.JsonArray, headers?: string[] | Type.Indexable.String) {
+            this.json_array_class = Models.createNewTableDataSource(json_array);
             if(headers) {
                 if(Array.isArray(headers)) {
-                    this.JsonArray.Headers.setRender(headers);
+                    this.JsonArray.Header.setRenderWithKeys(headers);
                 } else {
-                    this.JsonArray.Headers.setTitle(headers);
-                    this.JsonArray.Headers.setRender(Object.keys(headers));
+                    this.JsonArray.Header.setRenderWithKeys(Object.keys(headers))
+                    this.JsonArray.Header.titles = headers;
+                    this.JsonArray.Header.setRender(Object.keys(headers));
                 }
             };
             this.table_html_class = new Renderer.TableHtml(target);
