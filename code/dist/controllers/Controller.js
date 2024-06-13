@@ -1,6 +1,4 @@
-import { Models } from "../models/Models.js";
-import { Renderer } from "../views/Renderer.js";
-import { Utils } from "../utils/Utils.js";
+import { Utils, Renderer, Models } from "../CreateTableFromJsonArray.js";
 export var Controller;
 (function (Controller) {
     class Main {
@@ -8,20 +6,20 @@ export var Controller;
         compose_data_class = new Models.Compose();
         table_html_class;
         constructor(target, json_array, headers) {
-            this.json_array_class = new Models.JsonArray(json_array);
+            this.json_array_class = Models.createNewTableDataSource(json_array);
             if (headers) {
                 if (Array.isArray(headers)) {
-                    this.JsonArray.Headers.setRender(headers);
+                    this.TableDataSource.Header.setRenderWithKeys(headers);
                 }
                 else {
-                    this.JsonArray.Headers.setTitle(headers);
-                    this.JsonArray.Headers.setRender(Object.keys(headers));
+                    this.TableDataSource.Header.titles = headers;
+                    this.TableDataSource.Header.setRenderWithKeys(Object.keys(headers));
                 }
             }
             ;
             this.table_html_class = new Renderer.TableHtml(target);
         }
-        get JsonArray() {
+        get TableDataSource() {
             return this.json_array_class;
         }
         get Compose() {
@@ -41,29 +39,16 @@ export var Controller;
             this.start();
         }
         start() {
-            this.options();
-            this.Main.TableHtml.init(this.Main.Compose.tableBody(this.Main.JsonArray.Data.getRenderArray(), this.Main.JsonArray.Headers.getRender()), this.Main.JsonArray.Headers.getRenderTitles(), this.footerSome());
+            this.Main.TableHtml.init(this.Main.Compose.tableBody(this.Main.TableDataSource.DataRows.getRenderArray(), this.Main.TableDataSource.Header.getRenderItems()), this.Main.TableDataSource.Header.getRenderTitles());
             this.Main.TableHtml.addEventListener('headerClick', (event) => {
                 this.headerClick(event.detail);
             });
         }
-        footerSome() {
-            const result = {};
-            const som = this.Main.JsonArray.Headers.render_column_some;
-            for (const key of som) {
-                let soma = 0;
-                this.Main.JsonArray.Data.getRenderArray().forEach(item => {
-                    soma += Utils.Data.getNestedProperty(item, key);
-                });
-                result[key] = soma;
-            }
-            return this.Main.Compose.tableFoot(result, this.Main.JsonArray.Headers.getRender());
-        }
         refreshTableBody(teste) {
-            this.Main.TableHtml.refreshBody(teste, this.Main.JsonArray.Headers.getRenderKeys());
+            this.Main.TableHtml.refreshBody(teste, this.Main.TableDataSource.Header.getRenderKeys());
         }
         headerClick(key) {
-            this.refreshTableBody(this.Main.Compose.tableBody(this.sortByHeader(this.Main.JsonArray.Data.getRenderArray(), key), this.Main.JsonArray.Headers.getRender()));
+            this.refreshTableBody(this.Main.Compose.tableBody(this.sortByHeader(this.Main.TableDataSource.DataRows.getRenderArray(), key), this.Main.TableDataSource.Header.getRenderItems()));
         }
         sortByHeader(table, key) {
             const ord = [];
@@ -90,7 +75,7 @@ export var Controller;
             });
         }
         options() {
-            this.Main.JsonArray.Headers.setRender([
+            this.Main.TableDataSource.Header.setRenderWithKeys([
                 "title",
                 "description",
                 "discountPercentage",
@@ -100,7 +85,7 @@ export var Controller;
                 "price",
                 "meta.createdAt"
             ]);
-            this.Main.JsonArray.Headers.setTitle({
+            this.Main.TableDataSource.Header.titles = {
                 "title": "Titulo",
                 "description": "Descrição",
                 "discountPercentage": "Desconto",
@@ -109,17 +94,16 @@ export var Controller;
                 "dimensions.height": "Altura",
                 "dimensions.depth": "Comprimento",
                 "meta.createdAt": "Criando em"
-            });
-            this.Main.JsonArray.Headers.setFormatTo({
+            };
+            this.Main.TableDataSource.Header.format_options = {
                 "price": "CURRENCY",
                 "meta.createdAt": "DATE",
                 "discountPercentage": "PERCENT",
                 "weight": "FLOAT_FIX"
-            });
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.width");
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.height");
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.depth");
-            this.Main.JsonArray.Data.setRender([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
+            };
+            this.Main.TableDataSource.Header.items["dimensions.width"].footer_function = "columnSome";
+            this.Main.TableDataSource.Header.items["dimensions.height"].footer_function = "columnSome";
+            this.Main.TableDataSource.Header.items["dimensions.depth"].footer_function = "columnSome";
         }
         get Main() {
             return this.main_class;

@@ -23,9 +23,8 @@ export var Renderer;
                 this.html_table = table;
             }
         }
-        init(data, headers, footers) {
+        init(data, headers) {
             this.createThead(headers);
-            this.createTfoot(footers);
             this.createTableBody(data, Object.keys(headers));
             this.html_table.append(this.thead, this.tbody, this.tfoot);
         }

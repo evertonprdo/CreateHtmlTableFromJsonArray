@@ -1,5 +1,5 @@
-import { Utils, Type } from "../CreateTableFromJsonArray";
-import { TableDataSource } from "./TableDataSource";
+import { Utils, Type } from "../CreateTableFromJsonArray.js";
+import { TableDataSource } from "./TableDataSource.js";
 
 export namespace Models {
     export function createNewTableDataSource(json_array: Type.JsonArray): TableDataSource {

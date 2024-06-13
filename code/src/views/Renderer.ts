@@ -27,9 +27,9 @@ export namespace Renderer {
             }
         }
 
-        init(data: Type.ObjString[], headers: Type.ObjString, footers: Type.ObjString): void {
+        init(data: Type.ObjString[], headers: Type.ObjString): void {
             this.createThead(headers);
-            this.createTfoot(footers);
+            //this.createTfoot(footers);
             this.createTableBody(data, Object.keys(headers));
             this.html_table.append(this.thead, this.tbody, this.tfoot);
         }

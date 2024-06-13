@@ -11,17 +11,16 @@ export namespace Controller {
             this.json_array_class = Models.createNewTableDataSource(json_array);
             if(headers) {
                 if(Array.isArray(headers)) {
-                    this.JsonArray.Header.setRenderWithKeys(headers);
+                    this.TableDataSource.Header.setRenderWithKeys(headers);
                 } else {
-                    this.JsonArray.Header.setRenderWithKeys(Object.keys(headers))
-                    this.JsonArray.Header.titles = headers;
-                    this.JsonArray.Header.setRender(Object.keys(headers));
+                    this.TableDataSource.Header.titles = headers;
+                    this.TableDataSource.Header.setRenderWithKeys(Object.keys(headers))
                 }
             };
             this.table_html_class = new Renderer.TableHtml(target);
         }
 
-        get JsonArray() {
+        get TableDataSource() {
             return this.json_array_class;
         }
 
@@ -45,38 +44,39 @@ export namespace Controller {
         }
 
         start() {
-            this.options();
+            //this.options();
             this.Main.TableHtml.init(
                 this.Main.Compose.tableBody(
-                    this.Main.JsonArray.Data.getRenderArray(),
-                    this.Main.JsonArray.Headers.getRender(),
+                    this.Main.TableDataSource.DataRows.getRenderArray(),
+                    this.Main.TableDataSource.Header.getRenderItems(),
                 ), 
-                this.Main.JsonArray.Headers.getRenderTitles(),
-                this.footerSome()
+                this.Main.TableDataSource.Header.getRenderTitles(),
+                //this.footerSome()
             )
             this.Main.TableHtml.addEventListener('headerClick', (event) => {
                 this.headerClick((event as CustomEvent).detail);
             })
         }
-
+/*
         footerSome() {
             const result: {[key: string]: number} = {};
-            const som = this.Main.JsonArray.Headers.render_column_some
+            const som = this.Main.TableDataSource.Header.render_column_some
             for(const key of som) {
                 let soma = 0;
-                this.Main.JsonArray.Data.getRenderArray().forEach(item => {
+                this.Main.TableDataSource.DataRows.getRenderArray().forEach(item => {
                     soma += Utils.Data.getNestedProperty(item, key) as number;
                 })
                 result[key] = soma;
             }
 
-            return this.Main.Compose.tableFoot(result, this.Main.JsonArray.Headers.getRender())
+            return this.Main.Compose.tableFoot(result, this.Main.TableDataSource.Header.getRenderItems())
         }
+*/
 
         refreshTableBody(teste?: any) {
             this.Main.TableHtml.refreshBody(
                 teste,
-                this.Main.JsonArray.Headers.getRenderKeys()
+                this.Main.TableDataSource.Header.getRenderKeys()
             );
         }
 
@@ -84,10 +84,10 @@ export namespace Controller {
             this.refreshTableBody(
                 this.Main.Compose.tableBody(
                     this.sortByHeader(
-                        this.Main.JsonArray.Data.getRenderArray(),
+                        this.Main.TableDataSource.DataRows.getRenderArray(),
                         key
                     ),
-                    this.Main.JsonArray.Headers.getRender()
+                    this.Main.TableDataSource.Header.getRenderItems()
                 )
             );
         }
@@ -118,7 +118,7 @@ export namespace Controller {
 
         // Adminstração da tabela, temporariamente para testar os recursos.
         options() {
-            this.Main.JsonArray.Headers.setRender(
+            this.Main.TableDataSource.Header.setRenderWithKeys(
                 [
                     "title",
                     "description",
@@ -130,30 +130,28 @@ export namespace Controller {
                     "meta.createdAt"
                 ]
             )
-            this.Main.JsonArray.Headers.setTitle(
-                {
-                    "title": "Titulo",
-                    "description": "Descrição",
-                    "discountPercentage": "Desconto",
-                    "price": "Preço",
-                    "dimensions.width": "Largura",
-                    "dimensions.height": "Altura",
-                    "dimensions.depth": "Comprimento",
-                    "meta.createdAt": "Criando em"
-                }
-            )
-            this.Main.JsonArray.Headers.setFormatTo(
-                {
-                    "price": "CURRENCY",
-                    "meta.createdAt": "DATE",
-                    "discountPercentage": "PERCENT",
-                    "weight": "FLOAT_FIX"
-                }
-            )
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.width")
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.height")
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.depth")
-            this.Main.JsonArray.Data.setRender([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
+            this.Main.TableDataSource.Header.titles = {
+                "title": "Titulo",
+                "description": "Descrição",
+                "discountPercentage": "Desconto",
+                "price": "Preço",
+                "dimensions.width": "Largura",
+                "dimensions.height": "Altura",
+                "dimensions.depth": "Comprimento",
+                "meta.createdAt": "Criando em"
+            }
+            
+            this.Main.TableDataSource.Header.format_options = {
+                "price": "CURRENCY",
+                "meta.createdAt": "DATE",
+                "discountPercentage": "PERCENT",
+                "weight": "FLOAT_FIX"
+            }
+            this.Main.TableDataSource.Header.items["dimensions.width"].footer_function = "columnSome"
+            this.Main.TableDataSource.Header.items["dimensions.height"].footer_function = "columnSome"
+            this.Main.TableDataSource.Header.items["dimensions.depth"].footer_function = "columnSome"
+
+            //this.Main.TableDataSource.DataRows. ([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
         }
 
         get Main() {
