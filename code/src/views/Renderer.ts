@@ -1,3 +1,4 @@
+import { Utils } from "../CreateTableFromJsonArray.js";
 import { Type } from "../utils/Types.js";
 
 export namespace Renderer {
@@ -5,7 +6,7 @@ export namespace Renderer {
         private readonly html_table: HTMLTableElement;
         private readonly html_thead: HTMLTableSectionElement;
         private readonly html_tbody: HTMLTableSectionElement;
-        private readonly html_tfoot: HTMLTableSectionElement;
+        //private readonly html_tfoot: HTMLTableSectionElement;
         
         private fragment: DocumentFragment;
 
@@ -14,7 +15,7 @@ export namespace Renderer {
             this.fragment = document.createDocumentFragment();
             this.html_thead = document.createElement('thead');
             this.html_tbody = document.createElement('tbody');
-            this.html_tfoot = document.createElement('tfoot');
+            //this.html_tfoot = document.createElement('tfoot');
 
             if(target instanceof HTMLTableElement) {
                 target.innerText = "";
@@ -27,19 +28,19 @@ export namespace Renderer {
             }
         }
 
-        init(data: Type.ObjString[], headers: Type.ObjString): void {
+        init(data: Type.JsonArray, headers: Type.Indexable.String): void {
             this.createThead(headers);
             //this.createTfoot(footers);
             this.createTableBody(data, Object.keys(headers));
-            this.html_table.append(this.thead, this.tbody, this.tfoot);
+            this.html_table.append(this.thead, this.tbody);
         }
 
-        refreshBody(rows: Type.ObjString[], columns: string[]) {
+        refreshBody(rows: Type.JsonArray, columns: string[]) {
             this.tbody.innerText = '';
             this.createTableBody(rows, columns)
         }
 
-        private createThead(headers: Type.ObjString): HTMLTableSectionElement {
+        private createThead(headers: Type.Indexable.String): HTMLTableSectionElement {
             const tr = document.createElement('tr');
             Object.keys(headers).forEach(key => {
                 const th = document.createElement('th');
@@ -57,12 +58,12 @@ export namespace Renderer {
             return this.thead;
         };
 
-        createTableBody(rows: Type.ObjString[], columns: string[]): HTMLTableSectionElement {
+        createTableBody(rows: Type.JsonArray, columns: string[]): HTMLTableSectionElement {  
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 columns.forEach(column => {
-                    const td = document.createElement('td');
-                    td.innerText = row[column];
+                    const td = document.createElement('td');  
+                    td.innerText = String(Utils.Data.getNestedProperty(row, column));
                     tr.appendChild(td);
                 })
                 this.tbody.appendChild(tr);
@@ -70,29 +71,12 @@ export namespace Renderer {
             return this.tbody;
         }
 
-        private createTfoot(headers: Type.ObjString): HTMLTableSectionElement {
-            const tr = document.createElement('tr');
-            Object.keys(headers).forEach(key => {
-                const th = document.createElement('th');
-                th.innerText = headers[key];
-                tr.appendChild(th);
-            })
-            this.tfoot.appendChild(tr);
-            return this.thead;
-        };
-
         get thead() {
             return this.html_thead;
         }
-
         get tbody() {
             return this.html_tbody;
         }
-
-        get tfoot() {
-            return this.html_tfoot;
-        }
-
         get table() {
             return this.html_table;
         }

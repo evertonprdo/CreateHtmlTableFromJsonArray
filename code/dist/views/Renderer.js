@@ -1,17 +1,16 @@
+import { Utils } from "../CreateTableFromJsonArray.js";
 export var Renderer;
 (function (Renderer) {
     class TableHtml extends EventTarget {
         html_table;
         html_thead;
         html_tbody;
-        html_tfoot;
         fragment;
         constructor(target) {
             super();
             this.fragment = document.createDocumentFragment();
             this.html_thead = document.createElement('thead');
             this.html_tbody = document.createElement('tbody');
-            this.html_tfoot = document.createElement('tfoot');
             if (target instanceof HTMLTableElement) {
                 target.innerText = "";
                 this.html_table = target;
@@ -26,7 +25,7 @@ export var Renderer;
         init(data, headers) {
             this.createThead(headers);
             this.createTableBody(data, Object.keys(headers));
-            this.html_table.append(this.thead, this.tbody, this.tfoot);
+            this.html_table.append(this.thead, this.tbody);
         }
         refreshBody(rows, columns) {
             this.tbody.innerText = '';
@@ -55,32 +54,18 @@ export var Renderer;
                 const tr = document.createElement('tr');
                 columns.forEach(column => {
                     const td = document.createElement('td');
-                    td.innerText = row[column];
+                    td.innerText = String(Utils.Data.getNestedProperty(row, column));
                     tr.appendChild(td);
                 });
                 this.tbody.appendChild(tr);
             });
             return this.tbody;
         }
-        createTfoot(headers) {
-            const tr = document.createElement('tr');
-            Object.keys(headers).forEach(key => {
-                const th = document.createElement('th');
-                th.innerText = headers[key];
-                tr.appendChild(th);
-            });
-            this.tfoot.appendChild(tr);
-            return this.thead;
-        }
-        ;
         get thead() {
             return this.html_thead;
         }
         get tbody() {
             return this.html_tbody;
-        }
-        get tfoot() {
-            return this.html_tfoot;
         }
         get table() {
             return this.html_table;
