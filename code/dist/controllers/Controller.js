@@ -41,7 +41,6 @@ export var Controller;
             this.start();
         }
         start() {
-            this.options();
             this.Main.TableHtml.init(this.Main.Compose.tableBody(this.Main.JsonArray.Data.getRenderArray(), this.Main.JsonArray.Headers.getRender()), this.Main.JsonArray.Headers.getRenderTitles(), this.footerSome());
             this.Main.TableHtml.addEventListener('headerClick', (event) => {
                 this.headerClick(event.detail);

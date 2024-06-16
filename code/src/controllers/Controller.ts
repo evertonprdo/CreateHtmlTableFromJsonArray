@@ -46,7 +46,6 @@ export namespace Controller {
         }
 
         start() {
-            this.options();
             this.Main.TableHtml.init(
                 this.Main.Compose.tableBody(
                     this.Main.JsonArray.Data.getRenderArray(),
@@ -115,46 +114,6 @@ export namespace Controller {
                 }
                 return 0;
             });
-        }
-
-        // Adminstração da tabela, temporariamente para testar os recursos.
-        options() {
-            this.Main.JsonArray.Headers.setRender(
-                [
-                    "title",
-                    "description",
-                    "discountPercentage",
-                    "dimensions.width",
-                    "dimensions.height",
-                    "dimensions.depth",
-                    "price",
-                    "meta.createdAt"
-                ]
-            )
-            this.Main.JsonArray.Headers.setTitle(
-                {
-                    "title": "Titulo",
-                    "description": "Descrição",
-                    "discountPercentage": "Desconto",
-                    "price": "Preço",
-                    "dimensions.width": "Largura",
-                    "dimensions.height": "Altura",
-                    "dimensions.depth": "Comprimento",
-                    "meta.createdAt": "Criando em"
-                }
-            )
-            this.Main.JsonArray.Headers.setFormatTo(
-                {
-                    "price": "CURRENCY",
-                    "meta.createdAt": "DATE",
-                    "discountPercentage": "PERCENT",
-                    "weight": "FLOAT_FIX"
-                }
-            )
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.width")
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.height")
-            this.Main.JsonArray.Headers.switchColumnSum("dimensions.depth")
-            this.Main.JsonArray.Data.setRender([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
         }
 
         get Main() {
