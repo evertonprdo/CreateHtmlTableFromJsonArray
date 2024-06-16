@@ -116,44 +116,6 @@ export namespace Controller {
             });
         }
 
-        // Adminstração da tabela, temporariamente para testar os recursos.
-        options() {
-            this.Main.TableDataSource.Header.setRenderWithKeys(
-                [
-                    "title",
-                    "description",
-                    "discountPercentage",
-                    "dimensions.width",
-                    "dimensions.height",
-                    "dimensions.depth",
-                    "price",
-                    "meta.createdAt"
-                ]
-            )
-            this.Main.TableDataSource.Header.titles = {
-                "title": "Titulo",
-                "description": "Descrição",
-                "discountPercentage": "Desconto",
-                "price": "Preço",
-                "dimensions.width": "Largura",
-                "dimensions.height": "Altura",
-                "dimensions.depth": "Comprimento",
-                "meta.createdAt": "Criando em"
-            }
-            
-            this.Main.TableDataSource.Header.format_options = {
-                "price": "CURRENCY",
-                "meta.createdAt": "DATE",
-                "discountPercentage": "PERCENT",
-                "weight": "FLOAT_FIX"
-            }
-            this.Main.TableDataSource.Header.items["dimensions.width"].footer_function = "columnSome"
-            this.Main.TableDataSource.Header.items["dimensions.height"].footer_function = "columnSome"
-            this.Main.TableDataSource.Header.items["dimensions.depth"].footer_function = "columnSome"
-
-            //this.Main.TableDataSource.DataRows. ([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
-        }
-
         get Main() {
             return this.main_class
         }
