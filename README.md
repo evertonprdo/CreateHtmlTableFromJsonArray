@@ -19,4 +19,9 @@ Obs: Cabeçalho quando omitido usara a primeira linha como referência.
  - [x] Ordenar a tabela pelo cabeçalho.
  - [x] Rodapé com função columnSum().
 
-Atualmente o projeto está em desenvolvimento, exemplos serám adicionais quando estiver funcional, para acompanhar a usabilidade acesse ./code/src/index.ts
+### Atualmente o projeto está parado e incompleto:
+ - A parte de exibição de valores e construção automatica está funcionando;
+ - ordenação pelo cabeçalho e columnSome não está devidamente testado;
+ - refatoração incompleta, para verificar o estado atual da refatoração acesse a branch 'rebaseCode'.
+
+para alguns exemplos de configuração da tabela acesse './code/src/index.ts'.
