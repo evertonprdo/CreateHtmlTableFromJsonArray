@@ -68,7 +68,7 @@ export namespace Utils {
             return str;
         }
 
-        static valueTo(value: unknown, type: Type.FormatTo): string {
+        static valueTo(value: unknown, type: Type.Option.FormatTo): string {
             let result: Type.Primitive | object;
             switch (type) {               
                 case "FLOAT_FIX":

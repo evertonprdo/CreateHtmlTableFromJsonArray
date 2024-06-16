@@ -1,4 +1,14 @@
 export namespace Type {
+    export namespace Option {
+        export type Header = "title" | "format_to" | "footer_function" | "render_status";
+
+        export type FormatTo = "DATE" | "CURRENCY" | "FLOAT_FIX" | "PERCENT" | "default";
+
+        export type FooterFunction = "columnSome" | "columnMax" | "columnMin" | "columnMed" | "vadilidCount" | "default";
+
+        export type DataRow = "id" | "json_object" | "render_status";
+    }
+
     export type Primitive = string | number | boolean | null
 
     export type JsonObject = {
@@ -11,7 +21,8 @@ export namespace Type {
         title: string
         render_status: boolean
         format_to: Option.FormatTo
-        footer_function: string
+        footer_function: Option.FooterFunction
+        switchRenderStatus: () => void
     }
 
     export type Header = {
@@ -51,14 +62,9 @@ export namespace Type {
         export type FooterFunction = {
             [prop: string]: Type.Option.FooterFunction
         }
-    }
 
-    export namespace Option {
-
-        export type Header = "title" | "format_to" | "footer_function" | "render_status"
-
-        export type FormatTo = "DATE" | "CURRENCY" | "FLOAT_FIX" | "PERCENT" | "default"
-
-        export type FooterFunction = "columnSome" | "columnMax" | "columnMin" | "columnMed" | "default"
+        export type JsonObject = {
+            [prop: string]: Type.JsonObject
+        }
     }
 }
